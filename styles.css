@@ -1,0 +1,12 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+.table th, .table td {
+    text-align: center;
+}
+
+tfoot th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+}
