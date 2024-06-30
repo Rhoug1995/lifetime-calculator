@@ -29,12 +29,12 @@ $(document).ready(function() {
         const newRow = taskTable.querySelector('tbody').insertRow(-1);
         if ($('#showStats').prop("checked")) {
             newRow.innerHTML = `
-                <td><input type="text" name="taskName" class="form-control" placeholder="Task"></td>
+                <td><input type="text" name="taskName" class="form-control" placeholder="Task name"></td>
                 <td><input type="number" name="recurrenceAmount" class="form-control" placeholder=0></td>
                 <td>
                     <select name="recurrence" class="form-select">
                         <option value="hourly">Hourly</option>
-                        <option value="daily">Daily</option>
+                        <option value="daily" selected>Daily</option>
                         <option value="weekly">Weekly</option>
                         <option value="monthly">Monthly</option>
                     </select>
@@ -43,7 +43,7 @@ $(document).ready(function() {
                 <td>
                     <select name="durationUnit" class="form-select">
                         <option value="seconds">Seconds</option>
-                        <option value="minutes">Minutes</option>
+                        <option value="minutes" selected>Minutes</option>
                         <option value="hours">Hours</option>
                     </select>
                 </td>
@@ -56,21 +56,21 @@ $(document).ready(function() {
             `;
         } else {
             newRow.innerHTML = `
-                <td><input type="text" name="taskName" class="form-control"></td>
-                <td><input type="number" name="recurrenceAmount" class="form-control"></td>
+                <td><input type="text" name="taskName" class="form-control" placeholder="Task name"></td>
+                <td><input type="number" name="recurrenceAmount" class="form-control" placeholder=0></td>
                 <td>
                     <select name="recurrence" class="form-select">
                         <option value="hourly">Hourly</option>
-                        <option value="daily">Daily</option>
+                        <option value="daily" selected>Daily</option>
                         <option value="weekly">Weekly</option>
                         <option value="monthly">Monthly</option>
                     </select>
                 </td>
-                <td><input type="number" name="durationAmount" class="form-control"></td>
+                <td><input type="number" name="durationAmount" class="form-control" placeholder=0></td>
                 <td>
                     <select name="durationUnit" class="form-select">
                         <option value="seconds">Seconds</option>
-                        <option value="minutes">Minutes</option>
+                        <option value="minutes" selected>Minutes</option>
                         <option value="hours">Hours</option>
                     </select>
                 </td>
@@ -107,6 +107,7 @@ $(document).ready(function() {
         let totalMonthly = 0;
         let totalYearly = 0;
         let taskData = {};
+        let taskDurations = {};
 
         $('#taskTable tbody tr').each(function() {
             const taskName = $(this).find('input[name="taskName"]').val();
@@ -137,6 +138,7 @@ $(document).ready(function() {
             totalYearly += yearlyMinutes;
 
             taskData[taskName] = (taskData[taskName] || 0) + lifetimeMinutes;
+			taskDurations[taskName] = (taskDurations[taskName] || 0) + (dailyMinutes * lifeExpectancy * 60); // Total duration in seconds
 
             $(this).find('.daily').html(`
                 ${dailyMinutes.toFixed(2)} min<br>
@@ -192,6 +194,7 @@ $(document).ready(function() {
         $('#yearsLeft').text(`${yearsLeft.toFixed(2)} years`);
 
         updatePieChart(taskData);
+        updateBarChart(taskDurations); // Update the bar chart with new data
     }
 
     const ctx = document.getElementById('taskPieChart').getContext('2d');
@@ -226,29 +229,109 @@ $(document).ready(function() {
         }
     });
 
-    function updatePieChart(taskData) {
-        const labels = Object.keys(taskData);
-        const data = Object.values(taskData);
-        const total = data.reduce((sum, value) => sum + value, 0);
-        const percentages = data.map(value => (value / total) * 100);
+	
+	const ctx2 = document.getElementById('durationBarChart').getContext('2d');
+	const durationBarChart = new Chart(ctx2, {
+		type: 'bar',
+		data: {
+			labels: [],
+			datasets: [{
+				label: 'Task Durations (seconds)',
+				data: [],
+				backgroundColor: []
+			}]
+		},
+		options: {
+			responsive: true,
+			plugins: {
+				legend: {
+					position: 'top',
+				},
+				tooltip: {
+					callbacks: {
+						label: function(context) {
+							let label = context.dataset.label || '';
+							if (label) {
+								label += ': ';
+							}
+							label += context.raw.toFixed(2) + ' seconds';
+							return label;
+						}
+					}
+				}
+			},
+			scales: {
+				y: {
+					beginAtZero: true,
+					title: {
+						display: true,
+						text: 'Duration (seconds)'
+					}
+				}
+			}
+		}
+	});
 
-        pieChart.data.labels = labels;
-        pieChart.data.datasets[0].data = percentages;
-        pieChart.data.datasets[0].backgroundColor = labels.map(() => `hsl(${Math.random() * 360}, 100%, 75%)`);
-        pieChart.update();
-    }
+
+	function getColorFromString(str) {
+		let hash = 0;
+		for (let i = 0; i < str.length; i++) {
+			hash = str.charCodeAt(i) + ((hash << 5) - hash);
+		}
+		const c = (hash & 0x00000000FFFFFF).toString(16).toUpperCase();
+		var color = '#' + 'FF'.substring(0, 6 - c.length) + c;
+		console.log(color);
+		return color;
+	}
+
+	// Update Pie Chart with synchronized colors
+	function updatePieChart(taskData) {
+		const labels = Object.keys(taskData);
+		const data = Object.values(taskData);
+		const total = data.reduce((sum, value) => sum + value, 0);
+		const percentages = data.map(value => (value / total) * 100);
+
+		pieChart.data.labels = labels;
+		pieChart.data.datasets[0].data = percentages;
+		pieChart.data.datasets[0].backgroundColor = labels.map(taskName => getColorFromString(taskName));
+		pieChart.update();
+
+		// Update Bar Chart with synchronized colors
+		updateBarChart(taskData);
+	}
+
+	// Update Bar Chart with synchronized colors
+	function updateBarChart(taskDurations) {
+		const aggregatedData = {};
+		Object.keys(taskDurations).forEach(taskName => {
+			if (aggregatedData[taskName]) {
+				aggregatedData[taskName] += taskDurations[taskName];
+			} else {
+				aggregatedData[taskName] = taskDurations[taskName];
+			}
+		});
+
+		const labels = Object.keys(aggregatedData);
+		const data = Object.values(aggregatedData);
+
+		const combinedData = labels.map((label, index) => ({ label, data: data[index] }));
+		combinedData.sort((a, b) => b.data - a.data);
+
+		durationBarChart.data.labels = combinedData.map(item => item.label);
+		durationBarChart.data.datasets[0].data = combinedData.map(item => item.data);
+		durationBarChart.data.datasets[0].backgroundColor = combinedData.map(item => getColorFromString(item.label));
+		durationBarChart.update();
+	}
+
+
+
+
 
     calculateTime();
+
+
+    setTimeout(function() {
+        $('#showStats').click();
+    }, 100); // delay 100 ms
+
 });
-
-
-
-
-setTimeout( function(){
-
-  $('#showStats').click();
-
-}, 100); // delay 500 ms
-
-
-    

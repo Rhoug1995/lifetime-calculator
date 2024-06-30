@@ -139,8 +139,8 @@
                     <td><input type="number" name="durationAmount" class="form-control" value="2"></td>
                     <td>
                         <select name="durationUnit" class="form-select">
-                            <option value="seconds" selected>Seconds</option>
-                            <option value="minutes">Minutes</option>
+                            <option value="seconds">Seconds</option>
+                            <option value="minutes" selected>Minutes</option>
                             <option value="hours">Hours</option>
                         </select>
                     </td>
@@ -165,8 +165,8 @@
                     <td><input type="number" name="durationAmount" class="form-control" value="30"></td>
                     <td>
                         <select name="durationUnit" class="form-select">
-                            <option value="seconds" selected>Seconds</option>
-                            <option value="minutes">Minutes</option>
+                            <option value="seconds">Seconds</option>
+                            <option value="minutes" selected>Minutes</option>
                             <option value="hours">Hours</option>
                         </select>
                     </td>
@@ -217,8 +217,8 @@
                     <td><input type="number" name="durationAmount" class="form-control" value="2"></td>
                     <td>
                         <select name="durationUnit" class="form-select">
-                            <option value="seconds" selected>Seconds</option>
-                            <option value="minutes">Minutes</option>
+                            <option value="seconds">Seconds</option>
+                            <option value="minutes" selected>Minutes</option>
                             <option value="hours">Hours</option>
                         </select>
                     </td>
@@ -243,8 +243,8 @@
                     <td><input type="number" name="durationAmount" class="form-control" value="2"></td>
                     <td>
                         <select name="durationUnit" class="form-select">
-                            <option value="seconds" selected>Seconds</option>
-                            <option value="minutes">Minutes</option>
+                            <option value="seconds">Seconds</option>
+                            <option value="minutes" selected>Minutes</option>
                             <option value="hours">Hours</option>
                         </select>
                     </td>
@@ -256,8 +256,8 @@
                     <td><button class="btn btn-danger deleteTask">Delete</button></td>
                 </tr>
                 <tr>
-                    <td><input type="text" name="taskName" class="form-control" placeholder="Facebook"></td>
-                    <td><input type="number" name="recurrenceAmount" class="form-control" placeholder="0"></td>
+                    <td><input type="text" name="taskName" class="form-control" value="Facebook"></td>
+                    <td><input type="number" name="recurrenceAmount" class="form-control" value="1"></td>
                     <td>
                         <select name="recurrence" class="form-select">
                             <option value="daily" selected>Daily</option>
@@ -266,12 +266,12 @@
                             <option value="hourly">Hourly</option>
                         </select>
                     </td>
-                    <td><input type="number" name="durationAmount" class="form-control" placeholder="0"></td>
+                    <td><input type="number" name="durationAmount" class="form-control" value="2"></td>
                     <td>
                         <select name="durationUnit" class="form-select">
-                            <option value="seconds" selected>Seconds</option>
+                            <option value="seconds">Seconds</option>
                             <option value="minutes">Minutes</option>
-                            <option value="hours">Hours</option>
+                            <option value="hours" selected>Hours</option>
                         </select>
                     </td>
                     <td class="daily"></td>
@@ -282,8 +282,8 @@
                     <td><button class="btn btn-danger deleteTask">Delete</button></td>
                 </tr>
                 <tr>
-                    <td><input type="text" name="taskName" class="form-control" placeholder="Instagram"></td>
-                    <td><input type="number" name="recurrenceAmount" class="form-control" placeholder="0"></td>
+                    <td><input type="text" name="taskName" class="form-control" value="Instagram"></td>
+                    <td><input type="number" name="recurrenceAmount" class="form-control" value="1"></td>
                     <td>
                         <select name="recurrence" class="form-select">
                             <option value="daily" selected>Daily</option>
@@ -292,12 +292,12 @@
                             <option value="hourly">Hourly</option>
                         </select>
                     </td>
-                    <td><input type="number" name="durationAmount" class="form-control" placeholder="0"></td>
+                    <td><input type="number" name="durationAmount" class="form-control" value="1"></td>
                     <td>
                         <select name="durationUnit" class="form-select">
-                            <option value="seconds" selected>Seconds</option>
+                            <option value="seconds">Seconds</option>
                             <option value="minutes">Minutes</option>
-                            <option value="hours">Hours</option>
+                            <option value="hours" selected>Hours</option>
                         </select>
                     </td>
                     <td class="daily"></td>
@@ -308,8 +308,8 @@
                     <td><button class="btn btn-danger deleteTask">Delete</button></td>
                 </tr>
                 <tr>
-                    <td><input type="text" name="taskName" class="form-control" placeholder="YouTube"></td>
-                    <td><input type="number" name="recurrenceAmount" class="form-control" placeholder="0"></td>
+                    <td><input type="text" name="taskName" class="form-control" value="YouTube"></td>
+                    <td><input type="number" name="recurrenceAmount" class="form-control" value="1"></td>
                     <td>
                         <select name="recurrence" class="form-select">
                             <option value="daily" selected>Daily</option>
@@ -318,12 +318,12 @@
                             <option value="hourly">Hourly</option>
                         </select>
                     </td>
-                    <td><input type="number" name="durationAmount" class="form-control" placeholder="0"></td>
+                    <td><input type="number" name="durationAmount" class="form-control" value="1"></td>
                     <td>
                         <select name="durationUnit" class="form-select">
-                            <option value="seconds" selected>Seconds</option>
+                            <option value="seconds">Seconds</option>
                             <option value="minutes">Minutes</option>
-                            <option value="hours">Hours</option>
+                            <option value="hours" selected>Hours</option>
                         </select>
                     </td>
                     <td class="daily"></td>
@@ -339,13 +339,13 @@
         <button id="addTask" class="btn btn-primary mb-3">Add Task</button>
 
 		
-        <div id="charts" class="mb-3">
+        <div id="charts" class="row mb-3">
 		<h3 class="mb-4">Time Distribution</h3>
 			<div class="col-4">
 				<canvas id="taskPieChart"></canvas>
 			</div>
-			<div class="col-4">
-				<canvas id="taskPieChart2"></canvas>
+			<div class="col-8">
+				<canvas id="durationBarChart"></canvas>
 			</div>
         </div>
 
