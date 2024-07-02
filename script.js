@@ -1,94 +1,57 @@
 $(document).ready(function() {
-    $('#taskTable').DataTable({
-        paging: false,
-        searching: false,
-        info: false,
-        ordering: false
-    });
-
-    $('#showStats').prop("checked", true);
+    
 	$('#showGraphs').prop("checked", true);
 
-    $('#showStats').change(function() {
-        var columnsToToggle = [5, 6, 7, 8, 9];
-        $.each(columnsToToggle, function(index, columnIndex) {
-            $('#taskTable').find('tr').each(function() {
-                $(this).find('th, td').eq(columnIndex).toggle();
-            });
-        });
-    });
-	
-	$('#showGraphs').change(function() {
-		$('#charts').toggle();
+    $('#showGraphs').change(function() {
+        $('#charts').toggle();
     });
 
     const taskTable = document.getElementById('taskTable');
     taskTable.addEventListener('input', calculateTime);
 
     document.getElementById('addTask').addEventListener('click', () => {
-        const newRow = taskTable.querySelector('tbody').insertRow(-1);
-        if ($('#showStats').prop("checked")) {
-            newRow.innerHTML = `
-                <td><input type="text" name="taskName" class="form-control" placeholder="Task name"></td>
-                <td><input type="number" name="recurrenceAmount" class="form-control" placeholder=0></td>
-                <td>
-                    <select name="recurrence" class="form-select">
-                        <option value="hourly">Hourly</option>
-                        <option value="daily" selected>Daily</option>
-                        <option value="weekly">Weekly</option>
-                        <option value="monthly">Monthly</option>
-                    </select>
-                </td>
-                <td><input type="number" name="durationAmount" class="form-control" placeholder=0></td>
-                <td>
-                    <select name="durationUnit" class="form-select">
-                        <option value="seconds">Seconds</option>
-                        <option value="minutes" selected>Minutes</option>
-                        <option value="hours">Hours</option>
-                    </select>
-                </td>
-                <td class="daily"></td>
-                <td class="weekly"></td>
-                <td class="monthly"></td>
-                <td class="yearly"></td>
-                <td class="lifetime"></td>
-                <td><button class="btn btn-danger deleteTask">Delete</button></td>
-            `;
-        } else {
-            newRow.innerHTML = `
-                <td><input type="text" name="taskName" class="form-control" placeholder="Task name"></td>
-                <td><input type="number" name="recurrenceAmount" class="form-control" placeholder=0></td>
-                <td>
-                    <select name="recurrence" class="form-select">
-                        <option value="hourly">Hourly</option>
-                        <option value="daily" selected>Daily</option>
-                        <option value="weekly">Weekly</option>
-                        <option value="monthly">Monthly</option>
-                    </select>
-                </td>
-                <td><input type="number" name="durationAmount" class="form-control" placeholder=0></td>
-                <td>
-                    <select name="durationUnit" class="form-select">
-                        <option value="seconds">Seconds</option>
-                        <option value="minutes" selected>Minutes</option>
-                        <option value="hours">Hours</option>
-                    </select>
-                </td>
-                <td class="daily" style="display: none;"></td>
-                <td class="weekly" style="display: none;"></td>
-                <td class="monthly" style="display: none;"></td>
-                <td class="yearly" style="display: none;"></td>
-                <td class="lifetime" style="display: none;"></td>
-                <td><button class="btn btn-danger deleteTask">Delete</button></td>
-            `;
-        }
+        addTaskRow();
+    });
 
+    function addTaskRow(task = {}) {
+        const newRow = taskTable.querySelector('tbody').insertRow(-1);
+        newRow.innerHTML = `
+            <td><input type="text" name="taskName" class="form-control" placeholder="Task name" value="${task.taskName || ''}"></td>
+            <td><input type="number" name="recurrenceAmount" class="form-control" placeholder=0 value="${task.recurrenceAmount || 0}"></td>
+            <td>
+                <select name="recurrence" class="form-select">
+                    <option value="hourly" ${task.recurrence === 'hourly' ? 'selected' : ''}>Hourly</option>
+                    <option value="daily" ${!task.recurrence || task.recurrence === 'daily' ? 'selected' : ''}>Daily</option>
+                    <option value="weekly" ${task.recurrence === 'weekly' ? 'selected' : ''}>Weekly</option>
+                    <option value="monthly" ${task.recurrence === 'monthly' ? 'selected' : ''}>Monthly</option>
+                </select>
+            </td>
+            <td><input type="number" name="durationAmount" class="form-control" placeholder=0 value="${task.durationAmount || 0}"></td>
+            <td>
+                <select name="durationUnit" class="form-select">
+                    <option value="seconds" ${task.durationUnit === 'seconds' ? 'selected' : ''}>Seconds</option>
+                    <option value="minutes" ${!task.durationUnit || task.durationUnit === 'minutes' ? 'selected' : ''}>Minutes</option>
+                    <option value="hours" ${task.durationUnit === 'hours' ? 'selected' : ''}>Hours</option>
+                </select>
+            </td>
+            <td>
+                <button class="btn btn-info showStats">Stats</button>
+                <input type="hidden" class="dailyStats">
+                <input type="hidden" class="weeklyStats">
+                <input type="hidden" class="monthlyStats">
+                <input type="hidden" class="yearlyStats">
+                <input type="hidden" class="lifetimeStats">
+            <button class="btn btn-danger deleteTask">Delete</button></td>
+        `;
         newRow.querySelector('.deleteTask').addEventListener('click', () => {
             newRow.remove();
             calculateTime();
         });
+        newRow.querySelector('.showStats').addEventListener('click', () => {
+            showStatsModal(newRow);
+        });
         calculateTime();
-    });
+    }
 
     document.querySelectorAll('.deleteTask').forEach(button => {
         button.addEventListener('click', () => {
@@ -98,7 +61,7 @@ $(document).ready(function() {
     });
 
     function calculateTime() {
-        const lifeExpectancy = parseInt(document.getElementById('lifeExpectancy').value) || 0;
+        const lifeExpectancy = parseInt($('#lifeExpectancy').val()) || 0;
         let totalLifetimeMinutes = lifeExpectancy * 365 * 24 * 60;
 
         let totalMinutes = 0;
@@ -138,48 +101,17 @@ $(document).ready(function() {
             totalYearly += yearlyMinutes;
 
             taskData[taskName] = (taskData[taskName] || 0) + lifetimeMinutes;
-			taskDurations[taskName] = (taskDurations[taskName] || 0) + (dailyMinutes * lifeExpectancy * 60); // Total duration in seconds
+            taskDurations[taskName] = (taskDurations[taskName] || 0) + (dailyMinutes * lifeExpectancy * 60); // Total duration in seconds
 
-            $(this).find('.daily').html(`
-                ${dailyMinutes.toFixed(2)} min<br>
-				${(dailyMinutes / 60).toFixed(2)} hours<br>
-                ${(dailyMinutes / 60 / 24).toFixed(2)} days<br>
-                ${(dailyMinutes / 60 / 24 / 30.44).toFixed(2)} months<br>
-                ${(dailyMinutes / 60 / 24 / 365).toFixed(2)} years
-			`);
-				
-            $(this).find('.weekly').html(`
-                ${weeklyMinutes.toFixed(2)} min<br>
-				${(weeklyMinutes / 60).toFixed(2)} hours<br>
-                ${(weeklyMinutes / 60 / 24).toFixed(2)} days<br>
-                ${(weeklyMinutes / 60 / 24 / 30.44).toFixed(2)} months<br>
-                ${(weeklyMinutes / 60 / 24 / 365).toFixed(2)} years
-			`);
-			
-            $(this).find('.monthly').html(`
-                ${monthlyMinutes.toFixed(2)} min<br>
-				${(monthlyMinutes / 60).toFixed(2)} hours<br>
-                ${(monthlyMinutes / 60 / 24).toFixed(2)} days<br>
-                ${(monthlyMinutes / 60 / 24 / 30.44).toFixed(2)} months<br>
-                ${(monthlyMinutes / 60 / 24 / 365).toFixed(2)} years
-
-			`);
-            $(this).find('.yearly').html(`
-                ${yearlyMinutes.toFixed(2)} min<br>
-				${(yearlyMinutes / 60).toFixed(2)} hours<br>
-                ${(yearlyMinutes / 60 / 24).toFixed(2)} days<br>
-                ${(yearlyMinutes / 60 / 24 / 30.44).toFixed(2)} months<br>
-                ${(yearlyMinutes / 60 / 24 / 365).toFixed(2)} years
-			`);
-			
-            $(this).find('.lifetime').html(`
-                ${lifetimeMinutes.toFixed(2)} min<br>
-                ${(lifetimeMinutes / 60).toFixed(2)} hours<br>
-                ${(lifetimeMinutes / 60 / 24).toFixed(2)} days<br>
-                ${(lifetimeMinutes / 60 / 24 / 30.44).toFixed(2)} months<br>
-                ${(lifetimeMinutes / 60 / 24 / 365).toFixed(2)} years
-            `);
+            // Store calculated stats in hidden fields
+            $(this).find('.dailyStats').val(dailyMinutes.toFixed(2));
+            $(this).find('.weeklyStats').val(weeklyMinutes.toFixed(2));
+            $(this).find('.monthlyStats').val(monthlyMinutes.toFixed(2));
+            $(this).find('.yearlyStats').val(yearlyMinutes.toFixed(2));
+            $(this).find('.lifetimeStats').val(lifetimeMinutes.toFixed(2));
         });
+
+        
 
         const hoursLeft = (totalLifetimeMinutes - totalMinutes) / 60;
         const daysLeft = hoursLeft / 24;
@@ -192,9 +124,84 @@ $(document).ready(function() {
         $('#weeksLeft').text(`${weeksLeft.toFixed(2)} weeks`);
         $('#monthsLeft').text(`${monthsLeft.toFixed(2)} months`);
         $('#yearsLeft').text(`${yearsLeft.toFixed(2)} years`);
-
+		
+	
         updatePieChart(taskData);
-        updateBarChart(taskDurations); // Update the bar chart with new data
+        updateBarChart(taskDurations);
+    }
+
+    function showStatsModal(row) {
+		
+        const lifeExpectancy = parseInt($('#lifeExpectancy').val()) || 0;
+		
+        const taskName = $(row).find('input[name="taskName"]').val();
+        const daily = $(row).find('.dailyStats').val();
+        const weekly = $(row).find('.weeklyStats').val();
+        const monthly = $(row).find('.monthlyStats').val();
+        const yearly = $(row).find('.yearlyStats').val();
+        const lifetime = $(row).find('.lifetimeStats').val();
+
+		$('#statsModalLabel').html(taskName + ' - Advanced statistics');
+        const statsTable = `
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Minutes</th>
+                        <th>Hours</th>
+                        <th>Days</th>
+                        <th>Months</th>
+                        <th>Years</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="font-weight: bold;">Daily</td>
+                        <td>${daily}</td>
+                        <td>${(daily / 60).toFixed(2)}</td>
+                        <td>${(daily / 60 / 24).toFixed(2)}</td>
+                        <td>${(daily / 60 / 24 / 30.44).toFixed(2)}</td>
+                        <td>${(daily / 60 / 24 / 365).toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: bold;">Weekly</td>
+                        <td>${weekly}</td>
+                        <td>${(weekly / 60).toFixed(2)}</td>
+                        <td>${(weekly / 60 / 24).toFixed(2)}</td>
+                        <td>${(weekly / 60 / 24 / 30.44).toFixed(2)}</td>
+                        <td>${(weekly / 60 / 24 / 365).toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: bold;">Monthly</td>
+                        <td>${monthly}</td>
+                        <td>${(monthly / 60).toFixed(2)}</td>
+                        <td>${(monthly / 60 / 24).toFixed(2)}</td>
+                        <td>${(monthly / 60 / 24 / 30.44).toFixed(2)}</td>
+                        <td>${(monthly / 60 / 24 / 365).toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: bold;">Yearly</td>
+                        <td>${yearly}</td>
+                        <td>${(yearly / 60).toFixed(2)}</td>
+                        <td>${(yearly / 60 / 24).toFixed(2)}</td>
+                        <td>${(yearly / 60 / 24 / 30.44).toFixed(2)}</td>
+                        <td>${(yearly / 60 / 24 / 365).toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: bold;">Lifetime (${lifeExpectancy} anos)</td>
+                        <td>${lifetime}</td>
+                        <td>${(lifetime / 60).toFixed(2)}</td>
+                        <td>${(lifetime / 60 / 24).toFixed(2)}</td>
+                        <td>${(lifetime / 60 / 24 / 30.44).toFixed(2)}</td>
+                        <td>${(lifetime / 60 / 24 / 365).toFixed(2)}</td>
+                    </tr>
+                </tbody>
+            </table>
+        `;
+
+		calculateTime()
+        $('#statsContent').html(statsTable);
+        $('#statsModal').modal('show');
     }
 
     const ctx = document.getElementById('taskPieChart').getContext('2d');
@@ -216,7 +223,7 @@ $(document).ready(function() {
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            let label = context.label || '';
+                            let label = "Occupation during lifetime";
                             if (label) {
                                 label += ': ';
                             }
@@ -229,109 +236,133 @@ $(document).ready(function() {
         }
     });
 
-	
-	const ctx2 = document.getElementById('durationBarChart').getContext('2d');
-	const durationBarChart = new Chart(ctx2, {
-		type: 'bar',
-		data: {
-			labels: [],
-			datasets: [{
-				label: 'Task Durations (seconds)',
-				data: [],
-				backgroundColor: []
-			}]
-		},
-		options: {
-			responsive: true,
-			plugins: {
-				legend: {
-					position: 'top',
-				},
-				tooltip: {
-					callbacks: {
-						label: function(context) {
-							let label = context.dataset.label || '';
-							if (label) {
-								label += ': ';
-							}
-							label += context.raw.toFixed(2) + ' seconds';
-							return label;
-						}
-					}
-				}
-			},
-			scales: {
-				y: {
-					beginAtZero: true,
-					title: {
-						display: true,
-						text: 'Duration (seconds)'
-					}
-				}
-			}
-		}
-	});
+    const ctx2 = document.getElementById('durationBarChart').getContext('2d');
+    const durationBarChart = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [{
+                data: [],
+                backgroundColor: []
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            label += context.raw.toFixed(2) + ' %';
+                            return label;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Occupation during lifetime (%)'
+                    }
+                }
+            }
+        }
+    });
 
+    function getColorFromString(str) {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        const c = (hash & 0x00FFFFFF).toString(16).toUpperCase();
+        return '#' + '000000'.substring(0, 6 - c.length) + c;
+    }
 
-	function getColorFromString(str) {
-		let hash = 0;
-		for (let i = 0; i < str.length; i++) {
-			hash = str.charCodeAt(i) + ((hash << 5) - hash);
-		}
-		const c = (hash & 0x00000000FFFFFF).toString(16).toUpperCase();
-		var color = '#' + 'FF'.substring(0, 6 - c.length) + c;
-		console.log(color);
-		return color;
-	}
+    function updatePieChart(taskData) {
+        const labels = Object.keys(taskData);
+        const data = Object.values(taskData);
+        const total = data.reduce((sum, value) => sum + value, 0);
+        const percentages = data.map(value => (value / total) * 100);
 
-	// Update Pie Chart with synchronized colors
-	function updatePieChart(taskData) {
+        pieChart.data.labels = labels;
+        pieChart.data.datasets[0].data = percentages;
+        pieChart.data.datasets[0].backgroundColor = labels.map(taskName => getColorFromString(taskName));
+        pieChart.update();
+    }
+
+    function updateBarChart(taskData) {
+		// Extract labels and percentages from taskData
 		const labels = Object.keys(taskData);
 		const data = Object.values(taskData);
+
+		// Calculate total and percentages
 		const total = data.reduce((sum, value) => sum + value, 0);
 		const percentages = data.map(value => (value / total) * 100);
 
-		pieChart.data.labels = labels;
-		pieChart.data.datasets[0].data = percentages;
-		pieChart.data.datasets[0].backgroundColor = labels.map(taskName => getColorFromString(taskName));
-		pieChart.update();
+		// Create an array of objects with label and percentage for sorting
+		const dataWithLabels = labels.map((label, index) => ({
+			label,
+			percentage: percentages[index],
+			value: data[index] // If needed, you can also pass the original data values for further reference
+		}));
 
-		// Update Bar Chart with synchronized colors
-		updateBarChart(taskData);
-	}
+		// Sort dataWithLabels array by percentage in descending order
+		dataWithLabels.sort((a, b) => b.percentage - a.percentage);
 
-	// Update Bar Chart with synchronized colors
-	function updateBarChart(taskDurations) {
-		const aggregatedData = {};
-		Object.keys(taskDurations).forEach(taskName => {
-			if (aggregatedData[taskName]) {
-				aggregatedData[taskName] += taskDurations[taskName];
-			} else {
-				aggregatedData[taskName] = taskDurations[taskName];
-			}
-		});
+		// Update durationBarChart with sorted data
+		durationBarChart.data.labels = dataWithLabels.map(item => item.label);
+		durationBarChart.data.datasets[0].data = dataWithLabels.map(item => item.percentage);
+		durationBarChart.data.datasets[0].backgroundColor = dataWithLabels.map(item => getColorFromString(item.label));
 
-		const labels = Object.keys(aggregatedData);
-		const data = Object.values(aggregatedData);
-
-		const combinedData = labels.map((label, index) => ({ label, data: data[index] }));
-		combinedData.sort((a, b) => b.data - a.data);
-
-		durationBarChart.data.labels = combinedData.map(item => item.label);
-		durationBarChart.data.datasets[0].data = combinedData.map(item => item.data);
-		durationBarChart.data.datasets[0].backgroundColor = combinedData.map(item => getColorFromString(item.label));
+		// Update the chart
 		durationBarChart.update();
 	}
 
 
+    const predefinedTasks = [
+        { taskName: 'Sleeping', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 8, durationUnit: 'hours' },
+        { taskName: 'Eating', recurrenceAmount: 3, recurrence: 'daily', durationAmount: 30, durationUnit: 'minutes' },
+        { taskName: 'Personal Hygiene', recurrenceAmount: 2, recurrence: 'daily', durationAmount: 15, durationUnit: 'minutes' },
+        { taskName: 'Work/School', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 8, durationUnit: 'hours' },
+        { taskName: 'Commuting', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 30, durationUnit: 'minutes' },
+        { taskName: 'Exercise', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 1, durationUnit: 'hours' },
+        { taskName: 'Household Chores', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 1, durationUnit: 'hours' },
+        { taskName: 'Leisure/Relaxation', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 2, durationUnit: 'hours' },
+        { taskName: 'Social Media/Internet', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 1, durationUnit: 'hours' },
+        { taskName: 'Cooking', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 30, durationUnit: 'minutes' },
+        { taskName: 'Grocery Shopping', recurrenceAmount: 1, recurrence: 'weekly', durationAmount: 1, durationUnit: 'hours' },
+        { taskName: 'Errands', recurrenceAmount: 1, recurrence: 'weekly', durationAmount: 1, durationUnit: 'hours' },
+        { taskName: 'Deep Cleaning', recurrenceAmount: 1, recurrence: 'weekly', durationAmount: 2, durationUnit: 'hours' },
+        { taskName: 'Laundry', recurrenceAmount: 1, recurrence: 'weekly', durationAmount: 2, durationUnit: 'hours' },
+        { taskName: 'Yard Work/Gardening', recurrenceAmount: 1, recurrence: 'weekly', durationAmount: 1, durationUnit: 'hours' },
+        { taskName: 'Maintenance', recurrenceAmount: 1, recurrence: 'monthly', durationAmount: 2, durationUnit: 'hours' },
+        { taskName: 'Events', recurrenceAmount: 1, recurrence: 'monthly', durationAmount: 4, durationUnit: 'hours' },
+        { taskName: 'Education/Skill Development', recurrenceAmount: 1, recurrence: 'monthly', durationAmount: 4, durationUnit: 'hours' },
+    ];
 
-
-
-    calculateTime();
-
-
-    setTimeout(function() {
-        $('#showStats').click();
-    }, 100); // delay 100 ms
-
+    predefinedTasks.forEach(task => addTaskRow(task));
+	
+	$('#taskTable').DataTable({
+        paging: false,
+        searching: false,
+        info: false,
+        ordering: false,
+		language: {
+            emptyTable: "Add your tasks using the button above."
+        }
+    });
+	
+	
 });
+
+
+
+
