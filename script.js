@@ -1,23 +1,36 @@
+
 $(document).ready(function() {
-    
-	$('#showGraphs').prop("checked", true);
+
+	const checkboxTexts = ["showGraphs","showTasks","showSummary"]
+	checkboxTexts.forEach(id => $('#'+id).prop("checked", true));
 
     $('#showGraphs').change(function() {
         $('#charts').toggle();
     });
+	
+    $('#showTasks').change(function() {
+        $('#tasks').toggle();
+    });
+	
+	$('#showSummary').change(function() {
+        $('#resume').toggle();
+    });
+	
+});
+	
+	/* ------------------------------------------------------------------------------------------------------------------------------------------------ */
 
     const taskTable = document.getElementById('taskTable');
     taskTable.addEventListener('input', calculateTime);
 
-    document.getElementById('addTask').addEventListener('click', () => {
-        addTaskRow();
-    });
-
+	const lifeExpectancy = document.getElementById('lifeExpectancy');
+    lifeExpectancy.addEventListener('input', calculateTime);
+    
     function addTaskRow(task = {}) {
         const newRow = taskTable.querySelector('tbody').insertRow(-1);
         newRow.innerHTML = `
             <td><input type="text" name="taskName" class="form-control" placeholder="Task name" value="${task.taskName || ''}"></td>
-            <td><input type="number" name="recurrenceAmount" class="form-control" placeholder=0 value="${task.recurrenceAmount || 0}"></td>
+            <td><input type="number" name="recurrenceAmount" min="0" max="1000000" class="form-control" placeholder=0 value="${task.recurrenceAmount || 0}"></td>
             <td>
                 <select name="recurrence" class="form-select">
                     <option value="hourly" ${task.recurrence === 'hourly' ? 'selected' : ''}>Hourly</option>
@@ -26,7 +39,7 @@ $(document).ready(function() {
                     <option value="monthly" ${task.recurrence === 'monthly' ? 'selected' : ''}>Monthly</option>
                 </select>
             </td>
-            <td><input type="number" name="durationAmount" class="form-control" placeholder=0 value="${task.durationAmount || 0}"></td>
+            <td><input type="number" name="durationAmount" min="0" max="1000000" class="form-control" placeholder=0 value="${task.durationAmount || 0}"></td>
             <td>
                 <select name="durationUnit" class="form-select">
                     <option value="seconds" ${task.durationUnit === 'seconds' ? 'selected' : ''}>Seconds</option>
@@ -35,13 +48,13 @@ $(document).ready(function() {
                 </select>
             </td>
             <td>
-                <button class="btn btn-info showStats">Stats</button>
+                <button class="btn btn-info showStats"><i class="fa fa-bar-chart" aria-hidden="true"></i></button>
                 <input type="hidden" class="dailyStats">
                 <input type="hidden" class="weeklyStats">
                 <input type="hidden" class="monthlyStats">
                 <input type="hidden" class="yearlyStats">
                 <input type="hidden" class="lifetimeStats">
-            <button class="btn btn-danger deleteTask">Delete</button></td>
+            <button class="btn btn-danger deleteTask"><i class="fa fa-times" aria-hidden="true"></i></button></td>
         `;
         newRow.querySelector('.deleteTask').addEventListener('click', () => {
             newRow.remove();
@@ -52,6 +65,10 @@ $(document).ready(function() {
         });
         calculateTime();
     }
+	
+	document.getElementById('addTask').addEventListener('click', () => {
+        addTaskRow();
+    });
 
     document.querySelectorAll('.deleteTask').forEach(button => {
         button.addEventListener('click', () => {
@@ -112,13 +129,17 @@ $(document).ready(function() {
         });
 
         
-
         const hoursLeft = (totalLifetimeMinutes - totalMinutes) / 60;
         const daysLeft = hoursLeft / 24;
         const weeksLeft = daysLeft / 7;
         const monthsLeft = daysLeft / 30.44;
         const yearsLeft = daysLeft / 365;
-
+		
+		if(hoursLeft <= 0){
+			$('#timeRemaining').css('color', 'red');
+		} else {
+			$('#timeRemaining').css('color', 'black');
+		}
         $('#hoursLeft').text(`${hoursLeft.toFixed(2)} hours`);
         $('#daysLeft').text(`${daysLeft.toFixed(2)} days`);
         $('#weeksLeft').text(`${weeksLeft.toFixed(2)} weeks`);
@@ -199,7 +220,6 @@ $(document).ready(function() {
             </table>
         `;
 
-		calculateTime()
         $('#statsContent').html(statsTable);
         $('#statsModal').modal('show');
     }
@@ -325,13 +345,13 @@ $(document).ready(function() {
 		// Update the chart
 		durationBarChart.update();
 	}
-
-
-    const predefinedTasks = [
+	
+	/* ---------------------------------------------------------------------- default tasks -------------------------------------------------------------------------- */
+    
+	const predefinedTasks = [
         { taskName: 'Sleeping', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 8, durationUnit: 'hours' },
         { taskName: 'Eating', recurrenceAmount: 3, recurrence: 'daily', durationAmount: 30, durationUnit: 'minutes' },
         { taskName: 'Personal Hygiene', recurrenceAmount: 2, recurrence: 'daily', durationAmount: 15, durationUnit: 'minutes' },
-        { taskName: 'Work/School', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 8, durationUnit: 'hours' },
         { taskName: 'Commuting', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 30, durationUnit: 'minutes' },
         { taskName: 'Exercise', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 1, durationUnit: 'hours' },
         { taskName: 'Household Chores', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 1, durationUnit: 'hours' },
@@ -343,12 +363,44 @@ $(document).ready(function() {
         { taskName: 'Deep Cleaning', recurrenceAmount: 1, recurrence: 'weekly', durationAmount: 2, durationUnit: 'hours' },
         { taskName: 'Laundry', recurrenceAmount: 1, recurrence: 'weekly', durationAmount: 2, durationUnit: 'hours' },
         { taskName: 'Yard Work/Gardening', recurrenceAmount: 1, recurrence: 'weekly', durationAmount: 1, durationUnit: 'hours' },
-        { taskName: 'Maintenance', recurrenceAmount: 1, recurrence: 'monthly', durationAmount: 2, durationUnit: 'hours' },
         { taskName: 'Events', recurrenceAmount: 1, recurrence: 'monthly', durationAmount: 4, durationUnit: 'hours' },
         { taskName: 'Education/Skill Development', recurrenceAmount: 1, recurrence: 'monthly', durationAmount: 4, durationUnit: 'hours' },
     ];
 
     predefinedTasks.forEach(task => addTaskRow(task));
+	
+	
+	/* --------------------------------------------------------------------------- auto tasks from questionaire --------------------------------------------------------------------- */
+	
+	// This should be included at the beginning of the script.js or in a new script block in index.html
+    const userPreferences = JSON.parse(localStorage.getItem('userPreferences'));
+	
+	const questionaireTasks = {
+		"0": { taskName: 'Change diapers', recurrenceAmount: 5, recurrence: 'daily', durationAmount: 10, durationUnit: 'minutes' },
+		"1": { taskName: 'Feed the baby', recurrenceAmount: 5, recurrence: 'daily', durationAmount: 30, durationUnit: 'minutes' },
+		"2": { taskName: 'Make school lunch', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 20, durationUnit: 'minutes' },
+		"3": { taskName: 'Work', recurrenceAmount: 1, recurrence: 'daily', durationAmount: userPreferences.workHours, durationUnit: 'hours' }
+	}
+	
+	if (userPreferences) {
+        if (userPreferences.hasChildren === 'yes') {
+            if (userPreferences.newborn > 0) {
+				addTaskRow(questionaireTasks["0"]);
+				addTaskRow(questionaireTasks["1"]);
+            }
+            if (userPreferences.teenager > 0) {
+				addTaskRow(questionaireTasks["2"]);
+            }
+        }
+        if (userPreferences.work === 'yes') {
+			addTaskRow(questionaireTasks["3"]);
+        }
+		
+    }
+
+
+	/* ------------------------------------------------------------------------------------------------------------------------------------------------ */
+
 	
 	$('#taskTable').DataTable({
         paging: false,
@@ -359,9 +411,8 @@ $(document).ready(function() {
             emptyTable: "Add your tasks using the button above."
         }
     });
+	calculateTime();
 	
-	
-});
 
 
 
