@@ -47,6 +47,18 @@ $(document).ready(function() {
                     <option value="hours" ${task.durationUnit === 'hours' ? 'selected' : ''}>Hours</option>
                 </select>
             </td>
+			
+            <td><input type="number" name="intervalDuration" id="intervalDuration_${task.taskName}" min="0" max="1000000" class="form-control" placeholder="0" value="${task.intervalDuration || 0}"></td>
+            <td>
+                <select name="intervalUnit" class="form-select" onchange="toggleIntervalDuration(this, 'intervalDuration_${task.taskName}')">
+                    <option value="hours" ${task.intervalUnit === 'hours' ? 'selected' : ''}>Hours</option>
+                    <option value="days" ${!task.intervalUnit || task.intervalUnit === 'days' ? 'selected' : ''}>Days</option>
+                    <option value="weeks" ${task.intervalUnit === 'weeks' ? 'selected' : ''}>Weeks</option>
+                    <option value="months" ${task.intervalUnit === 'months' ? 'selected' : ''}>Months</option>
+                    <option value="years" ${task.intervalUnit === 'years' ? 'selected' : ''}>Years</option>
+                    <option value="lifetime" ${task.intervalUnit === 'lifetime' ? 'selected' : ''}>Lifetime</option>
+                </select>
+            </td>
             <td>
                 <button class="btn btn-info showStats"><i class="fa fa-bar-chart" aria-hidden="true"></i></button>
                 <input type="hidden" class="dailyStats">
@@ -90,11 +102,15 @@ $(document).ready(function() {
         let taskDurations = {};
 
         $('#taskTable tbody tr').each(function() {
+			
+			const lifeexpectancy = parseFloat($("#lifeExpectancy").val()) || 0;
             const taskName = $(this).find('input[name="taskName"]').val();
             const recurrenceAmount = parseFloat($(this).find('input[name="recurrenceAmount"]').val()) || 0;
             const recurrenceUnit = $(this).find('select[name="recurrence"]').val();
             const durationAmount = parseFloat($(this).find('input[name="durationAmount"]').val()) || 0;
             const durationUnit = $(this).find('select[name="durationUnit"]').val();
+            const intervalDuration = parseFloat($(this).find('input[name="intervalDuration"]').val()) || 0;
+            const intervalUnit = $(this).find('select[name="intervalUnit"]').val();
 
             let durationInMinutes = durationAmount;
             if (durationUnit === 'seconds') durationInMinutes /= 60;
@@ -109,7 +125,16 @@ $(document).ready(function() {
             const weeklyMinutes = dailyMinutes * 7;
             const monthlyMinutes = dailyMinutes * 30.44;
             const yearlyMinutes = dailyMinutes * 365;
-            const lifetimeMinutes = yearlyMinutes * lifeExpectancy;
+            
+            let intervalInYears = intervalDuration;
+            if (intervalUnit === 'hours') intervalInYears = intervalDuration / 24 / 365;
+            else if (intervalUnit === 'days') intervalInYears = intervalDuration / 365;
+            else if (intervalUnit === 'weeks') intervalInYears = intervalDuration / 52;
+            else if (intervalUnit === 'months') intervalInYears = intervalDuration / 12;
+            else if (intervalUnit === 'years') intervalInYears = intervalDuration;
+            else if (intervalUnit === 'lifetime') intervalInYears = lifeexpectancy;
+
+            const lifetimeMinutes = yearlyMinutes * intervalInYears;
 
             totalMinutes += lifetimeMinutes;
             totalDaily += dailyMinutes;
@@ -118,7 +143,7 @@ $(document).ready(function() {
             totalYearly += yearlyMinutes;
 
             taskData[taskName] = (taskData[taskName] || 0) + lifetimeMinutes;
-            taskDurations[taskName] = (taskDurations[taskName] || 0) + (dailyMinutes * lifeExpectancy * 60); // Total duration in seconds
+            taskDurations[taskName] = (taskDurations[taskName] || 0) + (dailyMinutes * intervalInYears * 365 * 60); // Total duration in seconds
 
             // Store calculated stats in hidden fields
             $(this).find('.dailyStats').val(dailyMinutes.toFixed(2));
@@ -150,6 +175,24 @@ $(document).ready(function() {
         updatePieChart(taskData);
         updateBarChart(taskDurations);
     }
+	
+	
+	
+	function toggleIntervalDuration(selectElement, intervalDurationTaskName) {
+		
+        const lifeExpectancy = parseInt($('#lifeExpectancy').val()) || 0;
+		
+		const intervalDurationInput = document.getElementById(intervalDurationTaskName);
+		if (selectElement.value === 'lifetime') {
+			intervalDurationInput.disabled = true;
+			intervalDurationInput.value = 1;
+			intervalDurationInput.style.backgroundColor = '#e9ecef'; // Bootstrap's gray background color for disabled elements
+		} else {
+			intervalDurationInput.disabled = false;
+			intervalDurationInput.style.backgroundColor = ''; // Reset to default
+		}
+	}
+
 
     function showStatsModal(row) {
 		
@@ -349,22 +392,21 @@ $(document).ready(function() {
 	/* ---------------------------------------------------------------------- default tasks -------------------------------------------------------------------------- */
     
 	const predefinedTasks = [
-        { taskName: 'Sleeping', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 8, durationUnit: 'hours' },
-        { taskName: 'Eating', recurrenceAmount: 3, recurrence: 'daily', durationAmount: 30, durationUnit: 'minutes' },
-        { taskName: 'Personal Hygiene', recurrenceAmount: 2, recurrence: 'daily', durationAmount: 15, durationUnit: 'minutes' },
-        { taskName: 'Commuting', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 30, durationUnit: 'minutes' },
-        { taskName: 'Exercise', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 1, durationUnit: 'hours' },
-        { taskName: 'Household Chores', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 1, durationUnit: 'hours' },
-        { taskName: 'Leisure/Relaxation', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 2, durationUnit: 'hours' },
-        { taskName: 'Social Media/Internet', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 1, durationUnit: 'hours' },
-        { taskName: 'Cooking', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 30, durationUnit: 'minutes' },
-        { taskName: 'Grocery Shopping', recurrenceAmount: 1, recurrence: 'weekly', durationAmount: 1, durationUnit: 'hours' },
-        { taskName: 'Errands', recurrenceAmount: 1, recurrence: 'weekly', durationAmount: 1, durationUnit: 'hours' },
-        { taskName: 'Deep Cleaning', recurrenceAmount: 1, recurrence: 'weekly', durationAmount: 2, durationUnit: 'hours' },
-        { taskName: 'Laundry', recurrenceAmount: 1, recurrence: 'weekly', durationAmount: 2, durationUnit: 'hours' },
-        { taskName: 'Yard Work/Gardening', recurrenceAmount: 1, recurrence: 'weekly', durationAmount: 1, durationUnit: 'hours' },
-        { taskName: 'Events', recurrenceAmount: 1, recurrence: 'monthly', durationAmount: 4, durationUnit: 'hours' },
-        { taskName: 'Education/Skill Development', recurrenceAmount: 1, recurrence: 'monthly', durationAmount: 4, durationUnit: 'hours' },
+        { taskName: 'Sleeping', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 8, durationUnit: 'hours', intervalDuration: 1, intervalUnit: "lifetime" },
+        { taskName: 'Eating', recurrenceAmount: 3, recurrence: 'daily', durationAmount: 30, durationUnit: 'minutes', intervalDuration: 1, intervalUnit: "lifetime" },
+        { taskName: 'Personal Hygiene', recurrenceAmount: 2, recurrence: 'daily', durationAmount: 15, durationUnit: 'minutes', intervalDuration: 1, intervalUnit: "lifetime" },
+        { taskName: 'Commuting', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 30, durationUnit: 'minutes', intervalDuration: 50, intervalUnit: "years" },
+        { taskName: 'Exercise', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 1, durationUnit: 'hours', intervalDuration: 40, intervalUnit: "years" },
+        { taskName: 'Household Chores', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 1, durationUnit: 'hours', intervalDuration: 60, intervalUnit: "years" },
+        { taskName: 'Leisure/Relaxation', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 2, durationUnit: 'hours', intervalDuration: 60, intervalUnit: "years" },
+        { taskName: 'Social Media/Internet', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 1, durationUnit: 'hours', intervalDuration: 40, intervalUnit: "years" },
+        { taskName: 'Cooking', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 30, durationUnit: 'minutes', intervalDuration: 70, intervalUnit: "years" },
+        { taskName: 'Grocery Shopping', recurrenceAmount: 1, recurrence: 'weekly', durationAmount: 1, durationUnit: 'hours', intervalDuration: 70, intervalUnit: "years" },
+        { taskName: 'Deep Cleaning', recurrenceAmount: 1, recurrence: 'weekly', durationAmount: 2, durationUnit: 'hours', intervalDuration: 60, intervalUnit: "years" },
+        { taskName: 'Laundry', recurrenceAmount: 1, recurrence: 'weekly', durationAmount: 2, durationUnit: 'hours', intervalDuration: 70, intervalUnit: "years" },
+        { taskName: 'Yard Work/Gardening', recurrenceAmount: 1, recurrence: 'weekly', durationAmount: 1, durationUnit: 'hours', intervalDuration: 40, intervalUnit: "years" },
+        { taskName: 'Events', recurrenceAmount: 1, recurrence: 'monthly', durationAmount: 4, durationUnit: 'hours', intervalDuration: 40, intervalUnit: "years" },
+        { taskName: 'Education/Skill Development', recurrenceAmount: 1, recurrence: 'monthly', durationAmount: 4, durationUnit: 'hours', intervalDuration: 40, intervalUnit: "years" },
     ];
 
     predefinedTasks.forEach(task => addTaskRow(task));
@@ -376,10 +418,10 @@ $(document).ready(function() {
     const userPreferences = JSON.parse(localStorage.getItem('userPreferences'));
 	
 	const questionaireTasks = {
-		"0": { taskName: 'Change diapers', recurrenceAmount: 5, recurrence: 'daily', durationAmount: 10, durationUnit: 'minutes' },
-		"1": { taskName: 'Feed the baby', recurrenceAmount: 5, recurrence: 'daily', durationAmount: 30, durationUnit: 'minutes' },
-		"2": { taskName: 'Make school lunch', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 20, durationUnit: 'minutes' },
-		"3": { taskName: 'Work', recurrenceAmount: 1, recurrence: 'daily', durationAmount: userPreferences.workHours, durationUnit: 'hours' }
+		"0": { taskName: 'Change diapers', recurrenceAmount: 5, recurrence: 'daily', durationAmount: 10, durationUnit: 'minutes', intervalDuration: 2, intervalUnit: "years" },
+		"1": { taskName: 'Feed the baby', recurrenceAmount: 5, recurrence: 'daily', durationAmount: 30, durationUnit: 'minutes', intervalDuration: 2, intervalUnit: "years" },
+		"2": { taskName: 'Make school lunch', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 20, durationUnit: 'minutes', intervalDuration: 10, intervalUnit: "years" },
+		"3": { taskName: 'Work', recurrenceAmount: 1, recurrence: 'daily', durationAmount: userPreferences.workHours, durationUnit: 'hours', intervalDuration: 50, intervalUnit: "years" }
 	}
 	
 	if (userPreferences) {
