@@ -12,26 +12,40 @@
 </head>
 <body>
     <div class="container-fluid">
-        <h1 class="mt-4">Life Management Calculator</h1>
-        <div class="mb-3 col-2">
-            <label for="lifeExpectancy" class="form-label">Life Expectancy (in years):</label>
-            <input type="number" id="lifeExpectancy" class="form-control" value="90">
-        </div>
-		
-		
-		
-		<div class="mb-4">
-			<div class="col-2">
-				<input type="checkbox" class="form-check-input" id="showTasks">
-				<label class="form-check-label" for="showTasks">Show tasks table</label>
+				
+		<h1 class="mt-4">Life Management Calculator</h1>
+        
+		<div class="row">
+			<div class="col-6">
+				<div class="mb-3 col-4">
+					<label for="lifeExpectancy" class="form-label">Life Expectancy (in years):</label>
+					<input type="number" id="lifeExpectancy" class="form-control" value="90">
+				</div>
+				
+				
+				
+				<div class="mb-4">
+					<div class="col-2">
+						<input type="checkbox" class="form-check-input" id="showTasks">
+						<label class="form-check-label" for="showTasks">Show tasks table</label>
+					</div>
+					<div class="col-2">
+						<input type="checkbox" class="form-check-input" id="showGraphs">
+						<label class="form-check-label" for="showGraphs">Show statistics (charts)</label>
+					</div>
+					<div class="col-2">
+						<input type="checkbox" class="form-check-input" id="showSummary">
+						<label class="form-check-label" for="showSummary">Show summary</label>
+					</div>
+				</div>
 			</div>
-			<div class="col-2">
-				<input type="checkbox" class="form-check-input" id="showGraphs">
-				<label class="form-check-label" for="showGraphs">Show statistics (charts)</label>
-			</div>
-			<div class="col-2">
-				<input type="checkbox" class="form-check-input" id="showSummary">
-				<label class="form-check-label" for="showSummary">Show summary</label>
+			<div class="col-6 h6 text-end">
+				<p><span style="font-weight: bold;">Recurrence Amount and Recurrence Unit:</span> The amount of times this task is performed <br>
+				(e.g.: the task is executed three times a day - Recurrence Amount: 3, Recurrence Unit: Daily)</p>
+				<p><span style="font-weight: bold;">Duration Amount and Duration Unit:</span> The amount of time each execution takes<br>
+				(e.g.: each time the task is executed you spend 2 hours - Duration Amount: 2, Duration Unit: Hours)</p>
+				<p><span style="font-weight: bold;">Interval Duration and Interval Unit:</span> The time interval in which you execute this task<br>
+				(e.g.: The task is only executed when you are between 20 years old and 30 - Duration Amount: 10, Duration Unit: Years)</p>
 			</div>
 		</div>
 			

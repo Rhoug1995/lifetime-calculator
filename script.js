@@ -103,7 +103,6 @@ $(document).ready(function() {
 
         $('#taskTable tbody tr').each(function() {
 			
-			const lifeexpectancy = parseFloat($("#lifeExpectancy").val()) || 0;
             const taskName = $(this).find('input[name="taskName"]').val();
             const recurrenceAmount = parseFloat($(this).find('input[name="recurrenceAmount"]').val()) || 0;
             const recurrenceUnit = $(this).find('select[name="recurrence"]').val();
@@ -132,7 +131,7 @@ $(document).ready(function() {
             else if (intervalUnit === 'weeks') intervalInYears = intervalDuration / 52;
             else if (intervalUnit === 'months') intervalInYears = intervalDuration / 12;
             else if (intervalUnit === 'years') intervalInYears = intervalDuration;
-            else if (intervalUnit === 'lifetime') intervalInYears = lifeexpectancy;
+            else if (intervalUnit === 'lifetime') intervalInYears = lifeExpectancy;
 
             const lifetimeMinutes = yearlyMinutes * intervalInYears;
 
@@ -179,9 +178,6 @@ $(document).ready(function() {
 	
 	
 	function toggleIntervalDuration(selectElement, intervalDurationTaskName) {
-		
-        const lifeExpectancy = parseInt($('#lifeExpectancy').val()) || 0;
-		
 		const intervalDurationInput = document.getElementById(intervalDurationTaskName);
 		if (selectElement.value === 'lifetime') {
 			intervalDurationInput.disabled = true;
