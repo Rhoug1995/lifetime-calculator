@@ -1,6 +1,8 @@
 
 $(document).ready(function() {
 
+	/* -------------------------------------------------------------------- Toggles ---------------------------------------------------------------------------- */
+	
 	const checkboxTexts = ["showGraphs","showTasks","showSummary"]
 	checkboxTexts.forEach(id => $('#'+id).prop("checked", true));
 
@@ -18,7 +20,7 @@ $(document).ready(function() {
 	
 });
 	
-	/* ------------------------------------------------------------------------------------------------------------------------------------------------ */
+	/* ---------------------------------------------------------------- Calculations -------------------------------------------------------------------------------- */
 
     const taskTable = document.getElementById('taskTable');
     taskTable.addEventListener('input', calculateTime);
@@ -410,8 +412,7 @@ $(document).ready(function() {
 	
 	/* --------------------------------------------------------------------------- auto tasks from questionaire --------------------------------------------------------------------- */
 	
-	// This should be included at the beginning of the script.js or in a new script block in index.html
-    const userPreferences = JSON.parse(localStorage.getItem('userPreferences'));
+	const userPreferences = JSON.parse(localStorage.getItem('userPreferences'));
 	
 	const questionaireTasks = {
 		"0": { taskName: 'Change diapers', recurrenceAmount: 5, recurrence: 'daily', durationAmount: 10, durationUnit: 'minutes', intervalDuration: 2, intervalUnit: "years" },
