@@ -13,11 +13,11 @@
 <body>
     <div class="container-fluid">
 				
-		<h1 class="mt-4">Life Management Calculator</h1>
+        <h1 class="mb-4">Task Lifetime Calculator</h1>
         
 		<div class="row">
 			<div class="col-6">
-				<div class="mb-3 col-4">
+				<div class="mb-3 col-2">
 					<label for="lifeExpectancy" class="form-label">Life Expectancy (in years):</label>
 					<input type="number" id="lifeExpectancy" class="form-control" value="90">
 				</div>
@@ -30,16 +30,22 @@
 						<label class="form-check-label" for="showTasks">Show tasks table</label>
 					</div>
 					<div class="col-2">
-						<input type="checkbox" class="form-check-input" id="showGraphs">
-						<label class="form-check-label" for="showGraphs">Show statistics (charts)</label>
+						<input type="checkbox" class="form-check-input" id="showStats">
+						<label class="form-check-label" for="showStats">Show statistics (charts)</label>
+					</div>
+					<div class="col-2">
+						<input type="checkbox" class="form-check-input" id="showAdvStats">
+						<label class="form-check-label" for="showAdvStats">Show advanced statistics</label>
 					</div>
 					<div class="col-2">
 						<input type="checkbox" class="form-check-input" id="showSummary">
 						<label class="form-check-label" for="showSummary">Show summary</label>
 					</div>
 				</div>
+				
+				
 			</div>
-			<div class="col-6 h6 text-end">
+			<div id="instructions" class="col-6 h6 text-end">
 				<p><span style="font-weight: bold;">Recurrence Amount and Recurrence Unit:</span> The amount of times this task is performed <br>
 				(e.g.: the task is executed three times a day - Recurrence Amount: 3, Recurrence Unit: Daily)</p>
 				<p><span style="font-weight: bold;">Duration Amount and Duration Unit:</span> The amount of time each execution takes<br>
@@ -47,10 +53,18 @@
 				<p><span style="font-weight: bold;">Interval Duration and Interval Unit:</span> The time interval in which you execute this task<br>
 				(e.g.: The task is only executed when you are between 20 years old and 30 - Interval Duration: 10, Interval Unit: Years)</p>
 			</div>
+			
+
 		</div>
 			
 		
 		<div id="tasks" class="mb-4">
+		
+				<div class="form-group mb-2 col-2">
+					<label for="taskFilter">Filter tasks:</label>
+					<input type="text" id="taskFilter" class="form-control" placeholder="Enter task name to filter...">
+				</div>
+				
 			<table id="taskTable" class="table table-striped">
 				<thead>
 					<tr>
@@ -69,20 +83,27 @@
 				</tbody>
 			</table>
 			<br>
-			<button id="addTask" class="btn btn-block btn-primary">Add Task</button>
+			<button id="addTask" class="btn btn-block w-100 btn-primary mb-4">Add Task</button>
         </div>
 
 		
-        <div id="charts" class="row mb-4">
+        <div id="stats" class="row mb-4">
 			<h3 class="mb-4">Statistics</h3>
-			<div class="col-4">
+			<div class="col-4 mb-4">
 				<canvas id="taskPieChart"></canvas>
 			</div>
-			<div class="col-8">
+			<div class="col-8 mb-4">
 				<canvas id="durationBarChart"></canvas>
 			</div>
         </div>
-
+		
+		
+        <div id="adv_stats" class="row mb-4">
+			<div id="aggregateStats" class="mt-4 row">
+				<!-- aggregateStats content will be injected here -->
+			</div>
+        </div>
+		
         <div id="resume" class="mb-4">
 			<h3 class="mb-4">Summary</h3>
 			<table class="table table-bordered">
@@ -98,6 +119,9 @@
 				</tr>
 			</table>
 		</div>
+		
+		<ul id="suggestionList"></ul>
+		
 		
 
     </div>
@@ -117,18 +141,23 @@
 					<div class="col-6">
 						<h6 class="mt-4"></h6>
 						<table class="table table-bordered">
-							<th colspan=2>All the values are calculated in minutes.</th>
 							<tr>
-								<td>Weekly values</td>
-								<td>Daily * 7</td>
+								<td style="font-weight: bold;">Daily values</td>
+								<td colspan=2>Anually / 365</td>
 							</tr>
 							<tr>
-								<td>Monthly values</td>
-								<td> Daily * 30.44</td>
+								<td style="font-weight: bold;">Weekly values</td>
+								<td>Daily x 7</td>
+								<td>Anually / 52</td>
 							</tr>
 							<tr>
-								<td>Yearly values</td>
-								<td>Daily * 365</td>
+								<td style="font-weight: bold;">Monthly values</td>
+								<td> Daily x 30.44</td>
+								<td>Anually / 12</td>
+							</tr>
+							<tr>
+								<td style="font-weight: bold;">Yearly values</td>
+								<td colspan=2>Daily x 365</td>
 							</tr>
 						</table>
 					</div>

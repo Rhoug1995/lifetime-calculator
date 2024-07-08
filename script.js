@@ -3,15 +3,20 @@ $(document).ready(function() {
 
 	/* -------------------------------------------------------------------- Toggles ---------------------------------------------------------------------------- */
 	
-	const checkboxTexts = ["showGraphs","showTasks","showSummary"]
+	const checkboxTexts = ["showStats", "showAdvStats", "showTasks", "showSummary"] 
 	checkboxTexts.forEach(id => $('#'+id).prop("checked", true));
 
-    $('#showGraphs').change(function() {
-        $('#charts').toggle();
+    $('#showStats').change(function() {
+        $('#stats').toggle();
+    });
+	
+    $('#showAdvStats').change(function() {
+        $('#adv_stats').toggle();
     });
 	
     $('#showTasks').change(function() {
         $('#tasks').toggle();
+        $('#instructions').toggle();
     });
 	
 	$('#showSummary').change(function() {
@@ -29,56 +34,72 @@ $(document).ready(function() {
     lifeExpectancy.addEventListener('input', calculateTime);
     
     function addTaskRow(task = {}) {
-        const newRow = taskTable.querySelector('tbody').insertRow(-1);
-        newRow.innerHTML = `
-            <td><input type="text" name="taskName" class="form-control" placeholder="Task name" value="${task.taskName || ''}"></td>
-            <td><input type="number" name="recurrenceAmount" min="0" max="1000000" class="form-control" placeholder=0 value="${task.recurrenceAmount || 0}"></td>
-            <td>
-                <select name="recurrence" class="form-select">
-                    <option value="hourly" ${task.recurrence === 'hourly' ? 'selected' : ''}>Hourly</option>
-                    <option value="daily" ${!task.recurrence || task.recurrence === 'daily' ? 'selected' : ''}>Daily</option>
-                    <option value="weekly" ${task.recurrence === 'weekly' ? 'selected' : ''}>Weekly</option>
-                    <option value="monthly" ${task.recurrence === 'monthly' ? 'selected' : ''}>Monthly</option>
-                </select>
-            </td>
-            <td><input type="number" name="durationAmount" min="0" max="1000000" class="form-control" placeholder=0 value="${task.durationAmount || 0}"></td>
-            <td>
-                <select name="durationUnit" class="form-select">
-                    <option value="seconds" ${task.durationUnit === 'seconds' ? 'selected' : ''}>Seconds</option>
-                    <option value="minutes" ${!task.durationUnit || task.durationUnit === 'minutes' ? 'selected' : ''}>Minutes</option>
-                    <option value="hours" ${task.durationUnit === 'hours' ? 'selected' : ''}>Hours</option>
-                </select>
-            </td>
-			
-            <td><input type="number" name="intervalDuration" id="intervalDuration_${task.taskName}" min="0" max="1000000" class="form-control" placeholder="0" value="${task.intervalDuration || 0}"></td>
-            <td>
-                <select name="intervalUnit" class="form-select" onchange="toggleIntervalDuration(this, 'intervalDuration_${task.taskName}')">
-                    <option value="hours" ${task.intervalUnit === 'hours' ? 'selected' : ''}>Hours</option>
-                    <option value="days" ${!task.intervalUnit || task.intervalUnit === 'days' ? 'selected' : ''}>Days</option>
-                    <option value="weeks" ${task.intervalUnit === 'weeks' ? 'selected' : ''}>Weeks</option>
-                    <option value="months" ${task.intervalUnit === 'months' ? 'selected' : ''}>Months</option>
-                    <option value="years" ${task.intervalUnit === 'years' ? 'selected' : ''}>Years</option>
-                    <option value="lifetime" ${task.intervalUnit === 'lifetime' ? 'selected' : ''}>Lifetime</option>
-                </select>
-            </td>
-            <td>
-                <button class="btn btn-info showStats"><i class="fa fa-bar-chart" aria-hidden="true"></i></button>
-                <input type="hidden" class="dailyStats">
-                <input type="hidden" class="weeklyStats">
-                <input type="hidden" class="monthlyStats">
-                <input type="hidden" class="yearlyStats">
-                <input type="hidden" class="lifetimeStats">
-            <button class="btn btn-danger deleteTask"><i class="fa fa-times" aria-hidden="true"></i></button></td>
-        `;
-        newRow.querySelector('.deleteTask').addEventListener('click', () => {
-            newRow.remove();
-            calculateTime();
-        });
-        newRow.querySelector('.showStats').addEventListener('click', () => {
-            showStatsModal(newRow);
-        });
+    const newRow = taskTable.querySelector('tbody').insertRow(-1);
+    newRow.innerHTML = `
+        <td><input type="text" name="taskName" class="form-control" placeholder="Task name" value="${task.taskName || ''}"><span>${task.taskDescription || ''}</span></td>
+        <td><input type="number" name="recurrenceAmount" min="0" max="1000000" class="form-control" placeholder=0 value="${task.recurrenceAmount || 0}"></td>
+        <td>
+            <select name="recurrence" class="form-select">
+                <option value="hourly" ${task.recurrence === 'hourly' ? 'selected' : ''}>Hourly</option>
+                <option value="daily" ${!task.recurrence || task.recurrence === 'daily' ? 'selected' : ''}>Daily</option>
+                <option value="weekly" ${task.recurrence === 'weekly' ? 'selected' : ''}>Weekly</option>
+                <option value="monthly" ${task.recurrence === 'monthly' ? 'selected' : ''}>Monthly</option>
+            </select>
+        </td>
+        <td><input type="number" name="durationAmount" min="0" max="1000000" class="form-control" placeholder=0 value="${task.durationAmount || 0}"></td>
+        <td>
+            <select name="durationUnit" class="form-select">
+                <option value="seconds" ${task.durationUnit === 'seconds' ? 'selected' : ''}>Seconds</option>
+                <option value="minutes" ${!task.durationUnit || task.durationUnit === 'minutes' ? 'selected' : ''}>Minutes</option>
+                <option value="hours" ${task.durationUnit === 'hours' ? 'selected' : ''}>Hours</option>
+            </select>
+        </td>
+        <td><input type="number" name="intervalDuration" id="intervalDuration_${task.taskName}" min="0" max="1000000" class="form-control" placeholder="0" value="${task.intervalDuration || 0}"></td>
+        <td>
+            <select name="intervalUnit" class="form-select" onchange="toggleIntervalDuration(this, 'intervalDuration_${task.taskName}')">
+                <option value="hours" ${task.intervalUnit === 'hours' ? 'selected' : ''}>Hours</option>
+                <option value="days" ${!task.intervalUnit || task.intervalUnit === 'days' ? 'selected' : ''}>Days</option>
+                <option value="weeks" ${task.intervalUnit === 'weeks' ? 'selected' : ''}>Weeks</option>
+                <option value="months" ${task.intervalUnit === 'months' ? 'selected' : ''}>Months</option>
+                <option value="years" ${task.intervalUnit === 'years' ? 'selected' : ''}>Years</option>
+                <option value="lifetime" ${task.intervalUnit === 'lifetime' ? 'selected' : ''}>Lifetime</option>
+            </select>
+        </td>
+        <td>
+            <button class="btn btn-info showStats"><i class="fa fa-bar-chart" aria-hidden="true"></i></button>
+            <input type="hidden" class="dailyStats">
+            <input type="hidden" class="weeklyStats">
+            <input type="hidden" class="monthlyStats">
+            <input type="hidden" class="yearlyStats">
+            <input type="hidden" class="lifetimeStats">
+            <button class="btn btn-danger deleteTask"><i class="fa fa-times" aria-hidden="true"></i></button>
+        </td>
+    `;
+    newRow.querySelector('.deleteTask').addEventListener('click', () => {
+        newRow.remove();
         calculateTime();
-    }
+    });
+    newRow.querySelector('.showStats').addEventListener('click', () => {
+        showStatsModal(newRow);
+    });
+    calculateTime();
+}
+
+
+	document.getElementById('taskFilter').addEventListener('input', function() {
+		const filterValue = this.value.toLowerCase();
+		const rows = taskTable.querySelectorAll('tbody tr');
+
+		rows.forEach(row => {
+			const taskName = row.querySelector('input[name="taskName"]').value.toLowerCase();
+			if (taskName.includes(filterValue)) {
+				row.style.display = '';
+			} else {
+				row.style.display = 'none';
+			}
+		});
+	});
+
 	
 	document.getElementById('addTask').addEventListener('click', () => {
         addTaskRow();
@@ -155,7 +176,8 @@ $(document).ready(function() {
         });
 
         
-        const hoursLeft = (totalLifetimeMinutes - totalMinutes) / 60;
+        const minutesLeft = (totalLifetimeMinutes - totalMinutes);
+        const hoursLeft = minutesLeft / 60;
         const daysLeft = hoursLeft / 24;
         const weeksLeft = daysLeft / 7;
         const monthsLeft = daysLeft / 30.44;
@@ -172,12 +194,107 @@ $(document).ready(function() {
         $('#monthsLeft').text(`${monthsLeft.toFixed(2)} months`);
         $('#yearsLeft').text(`${yearsLeft.toFixed(2)} years`);
 		
-	
         updatePieChart(taskData);
         updateBarChart(taskDurations);
+		
+		 // Calculate average time per task
+		const taskCount = $('#taskTable tbody tr').length;
+		const averageDaily = taskCount > 0 ? totalDaily / taskCount : 0;
+		const averageWeekly = taskCount > 0 ? totalWeekly / taskCount : 0;
+		const averageMonthly = taskCount > 0 ? totalMonthly / taskCount : 0;
+		const averageYearly = taskCount > 0 ? totalYearly / taskCount : 0;
+
+		$('#averageDaily').val(averageDaily.toFixed(2));
+		$('#averageWeekly').val(averageWeekly.toFixed(2));
+		$('#averageMonthly').val(averageMonthly.toFixed(2));
+		$('#averageYearly').val(averageYearly.toFixed(2));
+
+		// Store task distribution, interval and recurrence impacts in hidden inputs
+		let taskDistribution = '';
+		let intervalImpact = '';
+		let recurrenceImpact = '';
+		for (const [taskName, lifetimeMinutes] of Object.entries(taskData)) {
+			const percentage = (lifetimeMinutes / totalMinutes) * 100;
+			taskDistribution += `<tr><td>${taskName}</td><td>${percentage.toFixed(2)}%</td></tr>`;
+			intervalImpact += `<tr><td>${taskName}</td><td>${(taskDurations[taskName] / totalLifetimeMinutes * 100).toFixed(2)}%</td></tr>`;
+			recurrenceImpact += `<tr><td>${taskName}</td><td>${(taskDurations[taskName] / totalMinutes * 100).toFixed(2)}%</td></tr>`;
+		}
+
+		$('#taskDistributionContent').val(taskDistribution);
+		$('#intervalImpactContent').val(intervalImpact);
+		$('#recurrenceImpactContent').val(recurrenceImpact);
+		
+		/*
+		console.log("remaining: " + minutesLeft);
+		displaySuggestedTasks(minutesLeft);
+		*/
+		
+		 // Update aggregate statistics display
+		$('#aggregateStats').html(`
+			<div class="row mb-4">
+				<div class="col-4">
+					<h3 class="mb-4">Time Distribution Across Tasks</h3>
+					<p>Time Distribution Across Tasks measures the percentage of your total time spent on each individual task relative to the total time spent on all tasks. This helps to understand how much of your total time is dedicated to each specific task.</p>
+					<p>For example, if you spend a total of 2,000 minutes on various tasks and 500 minutes of that time is spent on exercising, the Time Distribution Across Tasks for exercising would be (500 / 2,000) * 100 = 25%.</p>
+					<table id="time_distribution_across_tasks" class="table table-striped">
+						<thead><tr><th>Task Name</th><th>Percentage of Total Time</th></tr></thead>
+						<tbody>${taskDistribution}</tbody>
+					</table>
+				</div>
+
+				<div class="col-4">
+					<h3 class="mb-4">Interval Impact</h3>
+					<p>Interval Impact measures the percentage of your total lifetime spent on a task within the defined interval of years during which the task is performed. This helps to understand how a task's time commitment is distributed across the different phases of your life.</p>
+					<p>For example, if you spend 2 hours a week studying for 4 years during college (ages 18 to 22), the Interval Impact would show the percentage of those 4 years spent on studying in relation to your total life expectancy.</p>
+					<table  id="interval_impact" class="table table-striped">
+						<thead><tr><th>Task Name</th><th>Impact Percentage</th></tr></thead>
+						<tbody>${intervalImpact}</tbody>
+					</table>
+				</div>
+
+				<div class="col-4">
+					<h3 class="mb-4">Recurrence Impact</h3>
+					<p>Recurrence Impact indicates the percentage of your total lifetime spent on recurring tasks based on their frequency. It helps to understand how much of your life is consumed by tasks that are performed regularly (daily, weekly, monthly, etc.).</p>
+					<p>For example, if you brush your teeth twice a day for 5 minutes each time throughout your entire life, the Recurrence Impact would show the percentage of your total life spent on brushing teeth.</p>
+					<table id="recurrence_impact" class="table table-striped">
+						<thead><tr><th>Task Name</th><th>Impact Percentage</th></tr></thead>
+						<tbody>${recurrenceImpact}</tbody>
+					</table>
+				</div>
+			</div>
+			
+			<div class="row mt-4">
+				<div class="col-3">
+					<!-- Aggregate stats will be injected here by JavaScript -->
+					<h3 class="mb-4">Average Time Spent Per Task</h3>
+					<table id="average_time_spent_per_task" class="table table-striped">
+						<thead><tr><th>Task Name</th><th>Impact Percentage</th></tr></thead>
+						<tbody>
+						<tr>
+							<td>Daily</td>
+							<td>${averageDaily.toFixed(2)} minutes</td>
+						</tr>
+						<tr>
+							<td>Weekly</td>
+							<td>${averageWeekly.toFixed(2)} minutes</td>
+						</tr>
+						<tr>
+							<td>Monthly</td>
+							<td>${averageMonthly.toFixed(2)} minutes</td>
+						</tr>
+						<tr>
+							<td>Yearly</td>
+							<td>${averageYearly.toFixed(2)} minutes</td>
+						</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		`);
+		
+		datatables()
+		
     }
-	
-	
 	
 	function toggleIntervalDuration(selectElement, intervalDurationTaskName) {
 		const intervalDurationInput = document.getElementById(intervalDurationTaskName);
@@ -192,6 +309,33 @@ $(document).ready(function() {
 	}
 
 
+	function datatables(){
+		$('#time_distribution_across_tasks').DataTable({
+			paging: false,
+			searching: false,
+			info: false,
+			ordering: true,
+			order: [[1, 'desc']]
+		});
+				
+		$('#recurrence_impact').DataTable({
+			paging: false,
+			searching: false,
+			info: false,
+			ordering: true,
+			order: [[1, 'desc']]
+		});
+		
+		$('#interval_impact').DataTable({
+			paging: false,
+			searching: false,
+			info: false,
+			ordering: true,
+			order: [[1, 'desc']]
+		});
+	}
+	
+
     function showStatsModal(row) {
 		
         const lifeExpectancy = parseInt($('#lifeExpectancy').val()) || 0;
@@ -202,13 +346,22 @@ $(document).ready(function() {
         const monthly = $(row).find('.monthlyStats').val();
         const yearly = $(row).find('.yearlyStats').val();
         const lifetime = $(row).find('.lifetimeStats').val();
+		
+		
+		const dailyStats = $(row).find('.dailyStats').val();
+		const weeklyStats = $(row).find('.weeklyStats').val();
+		const monthlyStats = $(row).find('.monthlyStats').val();
+		const yearlyStats = $(row).find('.yearlyStats').val();
+		const lifetimeStats = $(row).find('.lifetimeStats').val();
+		const taskImpactStats = $(row).find('.taskImpactStats').val();
+	
 
 		$('#statsModalLabel').html(taskName + ' - Advanced statistics');
         const statsTable = `
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th></th>
+                        <th>Time spent</th>
                         <th>Minutes</th>
                         <th>Hours</th>
                         <th>Days</th>
@@ -259,6 +412,16 @@ $(document).ready(function() {
                     </tr>
                 </tbody>
             </table>
+			
+			 <h3>${taskName} Statistics</h3>
+			<table class="table table-bordered">
+				<tr><td>Daily</td><td>${dailyStats} minutes</td></tr>
+				<tr><td>Weekly</td><td>${weeklyStats} minutes</td></tr>
+				<tr><td>Monthly</td><td>${monthlyStats} minutes</td></tr>
+				<tr><td>Yearly</td><td>${yearlyStats} minutes</td></tr>
+				<tr><td>Lifetime</td><td>${lifetimeStats} minutes</td></tr>
+			</table>
+    
         `;
 
         $('#statsContent').html(statsTable);
@@ -389,22 +552,31 @@ $(document).ready(function() {
 	
 	/* ---------------------------------------------------------------------- default tasks -------------------------------------------------------------------------- */
     
+	const healthyTasks = [
+		{ taskName: 'Sleeping', durationAmount: 480, durationUnit: 'minutes' }, // 8 hours converted to minutes
+		{ taskName: 'Eating', durationAmount: 30, durationUnit: 'minutes' },
+		{ taskName: 'Personal Hygiene', durationAmount: 15, durationUnit: 'minutes' },
+		{ taskName: 'Workout', durationAmount: 10, durationUnit: 'minutes' },
+		{ taskName: 'Visit a Museum', durationAmount: 50, durationUnit: 'minutes' },
+		// Add more tasks as needed
+	];
+	
 	const predefinedTasks = [
-        { taskName: 'Sleeping', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 8, durationUnit: 'hours', intervalDuration: 1, intervalUnit: "lifetime" },
-        { taskName: 'Eating', recurrenceAmount: 3, recurrence: 'daily', durationAmount: 30, durationUnit: 'minutes', intervalDuration: 1, intervalUnit: "lifetime" },
-        { taskName: 'Personal Hygiene', recurrenceAmount: 2, recurrence: 'daily', durationAmount: 15, durationUnit: 'minutes', intervalDuration: 1, intervalUnit: "lifetime" },
-        { taskName: 'Commuting', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 30, durationUnit: 'minutes', intervalDuration: 50, intervalUnit: "years" },
-        { taskName: 'Exercise', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 1, durationUnit: 'hours', intervalDuration: 40, intervalUnit: "years" },
-        { taskName: 'Household Chores', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 1, durationUnit: 'hours', intervalDuration: 60, intervalUnit: "years" },
-        { taskName: 'Leisure/Relaxation', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 2, durationUnit: 'hours', intervalDuration: 60, intervalUnit: "years" },
-        { taskName: 'Social Media/Internet', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 1, durationUnit: 'hours', intervalDuration: 40, intervalUnit: "years" },
-        { taskName: 'Cooking', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 30, durationUnit: 'minutes', intervalDuration: 70, intervalUnit: "years" },
-        { taskName: 'Grocery Shopping', recurrenceAmount: 1, recurrence: 'weekly', durationAmount: 1, durationUnit: 'hours', intervalDuration: 70, intervalUnit: "years" },
-        { taskName: 'Deep Cleaning', recurrenceAmount: 1, recurrence: 'weekly', durationAmount: 2, durationUnit: 'hours', intervalDuration: 60, intervalUnit: "years" },
-        { taskName: 'Laundry', recurrenceAmount: 1, recurrence: 'weekly', durationAmount: 2, durationUnit: 'hours', intervalDuration: 70, intervalUnit: "years" },
-        { taskName: 'Yard Work/Gardening', recurrenceAmount: 1, recurrence: 'weekly', durationAmount: 1, durationUnit: 'hours', intervalDuration: 40, intervalUnit: "years" },
+        { taskName: 'Sleeping', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 8, durationUnit: 'hours', intervalDuration: 1, intervalUnit: "lifetime", taskDescription: "" },
+        { taskName: 'Eating', recurrenceAmount: 3, recurrence: 'daily', durationAmount: 30, durationUnit: 'minutes', intervalDuration: 1, intervalUnit: "lifetime", taskDescription: "" },
+        { taskName: 'Personal Hygiene', recurrenceAmount: 2, recurrence: 'daily', durationAmount: 15, durationUnit: 'minutes', intervalDuration: 1, intervalUnit: "lifetime", taskDescription: "" },
+        { taskName: 'Commuting', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 30, durationUnit: 'minutes', intervalDuration: 50, intervalUnit: "years", taskDescription: "" },
+        { taskName: 'Exercise', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 1, durationUnit: 'hours', intervalDuration: 40, intervalUnit: "years", taskDescription: "" },
+        { taskName: 'Household Chores', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 1, durationUnit: 'hours', intervalDuration: 60, intervalUnit: "years", taskDescription: "" },
+        { taskName: 'Leisure/Relaxation', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 2, durationUnit: 'hours', intervalDuration: 60, intervalUnit: "years", taskDescription: "" },
+        { taskName: 'Social Media/Internet', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 1, durationUnit: 'hours', intervalDuration: 40, intervalUnit: "years", taskDescription: "" },
+        { taskName: 'Cooking', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 30, durationUnit: 'minutes', intervalDuration: 70, intervalUnit: "years", taskDescription: "" },
+        { taskName: 'Grocery Shopping', recurrenceAmount: 1, recurrence: 'weekly', durationAmount: 1, durationUnit: 'hours', intervalDuration: 70, intervalUnit: "years", taskDescription: "" },
+        { taskName: 'Deep Cleaning', recurrenceAmount: 1, recurrence: 'weekly', durationAmount: 2, durationUnit: 'hours', intervalDuration: 60, intervalUnit: "years", taskDescription: "" },
+        { taskName: 'Laundry', recurrenceAmount: 1, recurrence: 'weekly', durationAmount: 2, durationUnit: 'hours', intervalDuration: 70, intervalUnit: "years", taskDescription: "" },
+        { taskName: 'Yard Work/Gardening', recurrenceAmount: 1, recurrence: 'weekly', durationAmount: 1, durationUnit: 'hours', intervalDuration: 40, intervalUnit: "years", taskDescription: "" },
         { taskName: 'Events', recurrenceAmount: 1, recurrence: 'monthly', durationAmount: 4, durationUnit: 'hours', intervalDuration: 40, intervalUnit: "years" },
-        { taskName: 'Education/Skill Development', recurrenceAmount: 1, recurrence: 'monthly', durationAmount: 4, durationUnit: 'hours', intervalDuration: 40, intervalUnit: "years" },
+        { taskName: 'Education/Skill Development', recurrenceAmount: 1, recurrence: 'monthly', durationAmount: 4, durationUnit: 'hours', intervalDuration: 40, intervalUnit: "years", taskDescription: "" },
     ];
 
     predefinedTasks.forEach(task => addTaskRow(task));
@@ -415,10 +587,10 @@ $(document).ready(function() {
 	const userPreferences = JSON.parse(localStorage.getItem('userPreferences'));
 	
 	const questionaireTasks = {
-		"0": { taskName: 'Change diapers', recurrenceAmount: 5, recurrence: 'daily', durationAmount: 10, durationUnit: 'minutes', intervalDuration: 2, intervalUnit: "years" },
-		"1": { taskName: 'Feed the baby', recurrenceAmount: 5, recurrence: 'daily', durationAmount: 30, durationUnit: 'minutes', intervalDuration: 2, intervalUnit: "years" },
-		"2": { taskName: 'Make school lunch', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 20, durationUnit: 'minutes', intervalDuration: 10, intervalUnit: "years" },
-		"3": { taskName: 'Work', recurrenceAmount: 1, recurrence: 'daily', durationAmount: userPreferences.workHours, durationUnit: 'hours', intervalDuration: 50, intervalUnit: "years" }
+		"0": { taskName: 'Change diapers', recurrenceAmount: 5, recurrence: 'daily', durationAmount: 10, durationUnit: 'minutes', intervalDuration: 2, intervalUnit: "years", taskDescription: "" },
+		"1": { taskName: 'Feed the baby', recurrenceAmount: 5, recurrence: 'daily', durationAmount: 30, durationUnit: 'minutes', intervalDuration: 2, intervalUnit: "years", taskDescription: "" },
+		"2": { taskName: 'Make school lunch', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 20, durationUnit: 'minutes', intervalDuration: 10, intervalUnit: "years", taskDescription: "" },
+		"3": { taskName: 'Work', recurrenceAmount: 1, recurrence: 'daily', durationAmount: userPreferences.workHours, durationUnit: 'hours', intervalDuration: 50, intervalUnit: "years", taskDescription: "" }
 	}
 	
 	if (userPreferences) {
@@ -439,6 +611,42 @@ $(document).ready(function() {
 
 
 	/* ------------------------------------------------------------------------------------------------------------------------------------------------ */
+	
+	
+	/*	
+	function suggestHealthyTasks(remainingTime) {
+		let suggestions = [];
+		let totalTime = 0;
+
+		// Sort tasks by duration to try shorter tasks first
+		const sortedTasks = healthyTasks.sort((a, b) => a.durationAmount - b.durationAmount);
+
+		for (let task of sortedTasks) {
+			if (totalTime + task.durationAmount <= remainingTime) {
+				suggestions.push(task);
+				totalTime += task.durationAmount;
+			}
+		}
+
+		return suggestions;
+	}
+
+
+	function displaySuggestedTasks(remainingTime) {
+		const suggestions = suggestHealthyTasks(remainingTime);
+		const suggestionList = document.getElementById('suggestionList');
+		suggestionList.innerHTML = ''; // Clear previous suggestions
+
+		suggestions.forEach(task => {
+			const listItem = document.createElement('li');
+			listItem.textContent = `${task.taskName}: ${task.durationAmount} ${task.durationUnit}`;
+			suggestionList.appendChild(listItem);
+		});
+	}
+	*/
+
+
+	/* ------------------------------------------------------------------------------------------------------------------------------------------------ */
 
 	
 	$('#taskTable').DataTable({
@@ -450,7 +658,14 @@ $(document).ready(function() {
             emptyTable: "Add your tasks using the button above."
         }
     });
+	
 	calculateTime();
+	
+	
+	
+	
+	
+	
 	
 
 
