@@ -16,7 +16,6 @@ $(document).ready(function() {
 	
     $('#showTasks').change(function() {
         $('#tasks').toggle();
-        $('#instructions').toggle();
     });
 	
 	$('#showSummary').change(function() {
@@ -39,6 +38,7 @@ $(document).ready(function() {
         $('#average_time_spent_per_task_description').toggle();
     });
 	
+	$('[data-toggle="tooltip"]').tooltip()
 	
 });
 	
@@ -251,14 +251,9 @@ $(document).ready(function() {
 			<div class="row mb-4">
 				<div class="col-3">
 					<h3 class="mb-4">
-						Time Distribution Across Tasks 
-						<button id="time_distribution_across_tasks_description_button" class="btn btn-sm btn- "><i class="fa fa-question-circle" aria-hidden="true"></i></button>
+						Time Distribution Across Tasks
+						<button type="button"class="btn btn-sm" data-toggle="tooltip" data-placement="top" title="Time Distribution Across Tasks measures the percentage of your total time spent on each individual task relative to the total time spent on all tasks. This helps to understand how much of your total time is dedicated to each specific task.For example, if you spend a total of 2,000 minutes on various tasks and 500 minutes of that time is spent on exercising, the Time Distribution Across Tasks for exercising would be (500 / 2,000) * 100 = 25%."><i class="fa fa-question-circle" aria-hidden="true"></i></button>
 					</h3>
-					
-					<div id="time_distribution_across_tasks_description" style="display:none">
-						<p>Time Distribution Across Tasks measures the percentage of your total time spent on each individual task relative to the total time spent on all tasks. This helps to understand how much of your total time is dedicated to each specific task.</p>
-						<p>For example, if you spend a total of 2,000 minutes on various tasks and 500 minutes of that time is spent on exercising, the Time Distribution Across Tasks for exercising would be (500 / 2,000) * 100 = 25%.</p>
-					</div>
 					
 					<table id="time_distribution_across_tasks" class="table table-striped">
 						<thead><tr><th>Task Name</th><th>Percentage of Total Time</th></tr></thead>
@@ -269,13 +264,8 @@ $(document).ready(function() {
 				<div class="col-3">
 					<h3 class="mb-4">
 						Interval Impact
-						<button id="interval_impact_description_button" class="btn btn-sm btn- "><i class="fa fa-question-circle" aria-hidden="true"></i></button>
+						<button type="button"class="btn btn-sm" data-toggle="tooltip" data-placement="top" title="Interval Impact measures the percentage of your total lifetime spent on a task within the defined interval of years during which the task is performed. This helps to understand how a task's time commitment is distributed across the different phases of your life. For example, if you spend 2 hours a week studying for 4 years during college (ages 18 to 22), the Interval Impact would show the percentage of those 4 years spent on studying in relation to your total life expectancy."><i class="fa fa-question-circle" aria-hidden="true"></i></button>
 					</h3>
-					
-					<div id="interval_impact_description" style="display:none">
-						<p>Interval Impact measures the percentage of your total lifetime spent on a task within the defined interval of years during which the task is performed. This helps to understand how a task's time commitment is distributed across the different phases of your life.</p>
-						<p>For example, if you spend 2 hours a week studying for 4 years during college (ages 18 to 22), the Interval Impact would show the percentage of those 4 years spent on studying in relation to your total life expectancy.</p>
-					</div>
 						
 					<table id="interval_impact" class="table table-striped">
 						<thead><tr><th>Task Name</th><th>Interval Impact</th></tr></thead>
@@ -286,14 +276,9 @@ $(document).ready(function() {
 				<div class="col-3">
 					<h3 class="mb-4">
 						Recurrence Impact
-						<button id="recurrence_impact_description_button" class="btn btn-sm btn- "><i class="fa fa-question-circle" aria-hidden="true"></i></button>
+						<button type="button"class="btn btn-sm" data-toggle="tooltip" data-placement="top" title="Recurrence Impact indicates the percentage of your total lifetime spent on recurring tasks based on their frequency. It helps to understand how much of your life is consumed by tasks that are performed regularly (daily, weekly, monthly, etc.). For example, if you brush your teeth twice a day for 5 minutes each time throughout your entire life, the Recurrence Impact would show the percentage of your total life spent on brushing teeth."><i class="fa fa-question-circle" aria-hidden="true"></i></button>
 					</h3>
-					
-					<div id="recurrence_impact_description" style="display:none">
-						<p>Recurrence Impact indicates the percentage of your total lifetime spent on recurring tasks based on their frequency. It helps to understand how much of your life is consumed by tasks that are performed regularly (daily, weekly, monthly, etc.).</p>
-						<p>For example, if you brush your teeth twice a day for 5 minutes each time throughout your entire life, the Recurrence Impact would show the percentage of your total life spent on brushing teeth.</p>
-					</div>
-						
+											
 					<table id="recurrence_impact" class="table table-striped">
 						<thead><tr><th>Task Name</th><th>Recurrence Impact</th></tr></thead>
 						<tbody>${recurrenceImpact}</tbody>
@@ -304,14 +289,9 @@ $(document).ready(function() {
 					<!-- Aggregate stats will be injected here by JavaScript -->
 					<h3 class="mb-4">
 						Average Time Spent Per Task
-						<button id="average_time_spent_per_task_description_button" class="btn btn-sm btn- "><i class="fa fa-question-circle" aria-hidden="true"></i></button>
+						<button type="button"class="btn btn-sm" data-toggle="tooltip" data-placement="top" title="Average Time Spent Per Task measures the average amount of time you dedicate to each task over the span of your life. This metric helps to highlight the individual time investment for each task, providing insight into which activities consume more of your time on a regular basis. For example, if you spend 30 minutes cooking every day, the Average Time Spent Per Task will show the average daily time you spend on cooking, aggregated over your entire lifespan. This allows you to see the time commitment required for each task, aiding in better time management and prioritization."><i class="fa fa-question-circle" aria-hidden="true"></i></button>
 					</h3>
-					
-					<div id="average_time_spent_per_task_description" style="display:none">
-						<p>Average Time Spent Per Task measures the average amount of time you dedicate to each task over the span of your life. This metric helps to highlight the individual time investment for each task, providing insight into which activities consume more of your time on a regular basis.</p>
-						<p>For example, if you spend 30 minutes cooking every day, the Average Time Spent Per Task will show the average daily time you spend on cooking, aggregated over your entire lifespan. This allows you to see the time commitment required for each task, aiding in better time management and prioritization.</p>
-					</div>
-					
+										
 					<table id="average_time_spent_per_task" class="table table-striped">
 						<thead><tr><th>Task Name</th><th>Duration</th></tr></thead>
 						<tbody>

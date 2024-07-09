@@ -6,176 +6,176 @@
     <title>Time Management Calculator</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css" rel="stylesheet">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-	<link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <div class="container-fluid">
-				
-        <h1 class="mb-4">Task Lifetime Calculator</h1>
-        
-		<div class="row">
-			<div class="col-6">
-				<div class="mb-3 col-2">
-					<label for="lifeExpectancy" class="form-label">Life Expectancy (in years):</label>
-					<input type="number" id="lifeExpectancy" class="form-control" value="90">
-				</div>
-				
-				
-				
-				<div class="mb-4">
-					<div class="col-2">
-						<input type="checkbox" class="form-check-input" id="showTasks">
-						<label class="form-check-label" for="showTasks">Show tasks table</label>
-					</div>
-					<div class="col-2">
-						<input type="checkbox" class="form-check-input" id="showStats">
-						<label class="form-check-label" for="showStats">Show statistics (charts)</label>
-					</div>
-					<div class="col-2">
-						<input type="checkbox" class="form-check-input" id="showAdvStats">
-						<label class="form-check-label" for="showAdvStats">Show advanced statistics</label>
-					</div>
-					<div class="col-2">
-						<input type="checkbox" class="form-check-input" id="showSummary">
-						<label class="form-check-label" for="showSummary">Show summary</label>
-					</div>
-				</div>
-				
-				
-			</div>
-			<div id="instructions" class="col-6 h6 text-end">
-				<p><span style="font-weight: bold;">Recurrence Amount and Recurrence Unit:</span> The amount of times this task is performed <br>
-				(e.g.: the task is executed three times a day - Recurrence Amount: 3, Recurrence Unit: Daily)</p>
-				<p><span style="font-weight: bold;">Duration Amount and Duration Unit:</span> The amount of time each execution takes<br>
-				(e.g.: each time the task is executed you spend 2 hours - Duration Amount: 2, Duration Unit: Hours)</p>
-				<p><span style="font-weight: bold;">Interval Duration and Interval Unit:</span> The time interval in which you execute this task<br>
-				(e.g.: The task is only executed when you are between 20 years old and 30 - Interval Duration: 10, Interval Unit: Years)</p>
-			</div>
-			
+    <!-- Fixed Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Task Lifetime Calculator</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Options
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
+							<li class="px-3">
+                                <label for="lifeExpectancy" class="form-label">Life Expectancy (in years):</label>
+                                <input type="number" id="lifeExpectancy" class="form-control" value="90">
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <input type="checkbox" class="form-check-input me-2" id="showTasks">
+                                    <label class="form-check-label" for="showTasks">Show tasks table</label>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <input type="checkbox" class="form-check-input me-2" id="showStats">
+                                    <label class="form-check-label" for="showStats">Show statistics (charts)</label>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <input type="checkbox" class="form-check-input me-2" id="showAdvStats">
+                                    <label class="form-check-label" for="showAdvStats">Show advanced statistics</label>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <input type="checkbox" class="form-check-input me-2" id="showSummary">
+                                    <label class="form-check-label" for="showSummary">Show summary</label>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+	
 
-		</div>
-			
-		
-		<div id="tasks" class="mb-4">
-		
-				<div class="form-group mb-2 col-2">
-					<label for="taskFilter">Filter tasks:</label>
-					<input type="text" id="taskFilter" class="form-control" placeholder="Enter task name to filter...">
-				</div>
-				
-			<table id="taskTable" class="table table-striped">
-				<thead>
-					<tr>
-						<th>Task Name</th>
-						<th>Recurrence Amount</th>
-						<th>Recurrence Unit</th>
-						<th>Duration Amount</th>
-						<th>Duration Unit</th>
-						<th>Interval Duration</th>
-						<th>Interval Unit</th>
-						<th>Actions</th>
-					</tr>
-				</thead>
-				<tbody>
-					<!-- Data from JS script -->
-				</tbody>
-			</table>
-			<br>
-			<button id="addTask" class="btn btn-block w-100 btn-primary mb-4">Add Task</button>
+    <div class="container-fluid mt-5 pt-4">
+	        
+        <div id="tasks" class="mb-4">
+            <div class="form-group mb-2 col-2">
+                <label for="taskFilter">Filter tasks:</label>
+                <input type="text" id="taskFilter" class="form-control" placeholder="Enter task name to filter...">
+            </div>
+            
+            <table id="taskTable" class="table table-striped">
+                <thead>
+                    <tr>
+						<th rowspan=2>Task Name</th>
+						<th colspan=2>Recurrence <button type="button"class="btn btn-sm" data-toggle="tooltip" data-placement="top" title="The amount of times this task is performed (e.g.: the task is executed three times a day - Recurrence Amount: 3, Recurrence Unit: Daily)"><i class="fa fa-question-circle" aria-hidden="true"></i></button></th>
+						<th colspan=2>Duration <button type="button"class="btn btn-sm" data-toggle="tooltip" data-placement="top" title="The amount of time each execution takes (e.g.: each time the task is executed you spend 2 hours - Duration Amount: 2, Duration Unit: Hours)"><i class="fa fa-question-circle" aria-hidden="true"></i></button></th>
+						<th colspan=2>Interval <button type="button"class="btn btn-sm" data-toggle="tooltip" data-placement="top" title="The time interval in which you execute this task (e.g.: The task is only executed when you are between 20 years old and 30 - Interval Duration: 10, Interval Unit: Years)"><i class="fa fa-question-circle" aria-hidden="true"></i></button></th>
+                    </tr>
+                    <tr>
+                        <th>Recurrence Amount </th>
+                        <th>Recurrence Unit</th>
+                        <th>Duration Amount</th>
+                        <th>Duration Unit</th>
+                        <th>Interval Duration</th>
+                        <th>Interval Unit</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data from JS script -->
+                </tbody>
+            </table>
+            <br>
+            <button id="addTask" class="btn btn-block w-100 btn-primary mb-4">Add Task</button>
         </div>
 
-		
         <div id="stats" class="row mb-4">
-			<h3 class="mb-4">Statistics</h3>
-			<div class="col-4 mb-4">
-				<canvas id="taskPieChart"></canvas>
-			</div>
-			<div class="col-8 mb-4">
-				<canvas id="durationBarChart"></canvas>
-			</div>
+            <h3 class="mb-4">Statistics</h3>
+            <div class="col-4 mb-4">
+                <canvas id="taskPieChart"></canvas>
+            </div>
+            <div class="col-8 mb-4">
+                <canvas id="durationBarChart"></canvas>
+            </div>
         </div>
-		
-		
+        
         <div id="adv_stats" class="row mb-4">
-			<div id="aggregateStats" class="mt-4 row">
-				<!-- aggregateStats content will be injected here -->
-			</div>
+            <div id="aggregateStats" class="mt-4 row">
+                <!-- aggregateStats content will be injected here -->
+            </div>
         </div>
-		
+        
         <div id="resume" class="mb-4">
-			<h3 class="mb-4">Summary</h3>
-			<table class="table table-bordered">
-				<tr>
-					<th colspan=5 >Remaining Time to live life (hopefully to the fullest)</th>
-				</tr>
-				<tr id="timeRemaining">
-					<td id="hoursLeft"></td>
-					<td id="daysLeft"></td>
-					<td id="weeksLeft"></td>
-					<td id="monthsLeft"></td>
-					<td id="yearsLeft"></td>
-				</tr>
-			</table>
-		</div>
-		
-		<ul id="suggestionList"></ul>
-		
-		
-
+            <h3 class="mb-4">Summary</h3>
+            <table class="table table-bordered">
+                <tr>
+                    <th colspan=5 >Remaining Time to live life (hopefully to the fullest)</th>
+                </tr>
+                <tr id="timeRemaining">
+                    <td id="hoursLeft"></td>
+                    <td id="daysLeft"></td>
+                    <td id="weeksLeft"></td>
+                    <td id="monthsLeft"></td>
+                    <td id="yearsLeft"></td>
+                </tr>
+            </table>
+        </div>
+        
+        <ul id="suggestionList"></ul>
     </div>
 
-	<!-- Bootstrap Modal -->
-	<div class="modal fade" id="statsModal" tabindex="-1" aria-labelledby="statsModalLabel" aria-hidden="true">
-		<div class="modal-dialog-centered modal-dialog modal-lg">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="statsModalLabel">Task Statistics</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-				</div>
-				<div class="modal-body">
-					<div id="statsContent">
-						<!-- Stats content will be injected here -->
-					</div>
-					<div class="col-6">
-						<h6 class="mt-4"></h6>
-						<table class="table table-bordered">
-							<tr>
-								<td style="font-weight: bold;">Daily values</td>
-								<td colspan=2>Anually / 365</td>
-							</tr>
-							<tr>
-								<td style="font-weight: bold;">Weekly values</td>
-								<td>Daily x 7</td>
-								<td>Anually / 52</td>
-							</tr>
-							<tr>
-								<td style="font-weight: bold;">Monthly values</td>
-								<td> Daily x 30.44</td>
-								<td>Anually / 12</td>
-							</tr>
-							<tr>
-								<td style="font-weight: bold;">Yearly values</td>
-								<td colspan=2>Daily x 365</td>
-							</tr>
-						</table>
-					</div>
-					
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-				</div>
-			</div>
-		</div>
-	</div>
-
+    <!-- Bootstrap Modal -->
+    <div class="modal fade" id="statsModal" tabindex="-1" aria-labelledby="statsModalLabel" aria-hidden="true">
+        <div class="modal-dialog-centered modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="statsModalLabel">Task Statistics</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="statsContent">
+                        <!-- Stats content will be injected here -->
+                    </div>
+                    <div class="col-6">
+                        <h6 class="mt-4"></h6>
+                        <table class="table table-bordered">
+                            <tr>
+                                <td style="font-weight: bold;">Daily values</td>
+                                <td colspan=2>Anually / 365</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold;">Weekly values</td>
+                                <td>Daily x 7</td>
+                                <td>Anually / 52</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold;">Monthly values</td>
+                                <td> Daily x 30.44</td>
+                                <td>Anually / 12</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold;">Yearly values</td>
+                                <td colspan=2>Daily x 365</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="script.js"></script>
-	
-	
 </body>
 </html>
