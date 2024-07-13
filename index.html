@@ -42,7 +42,7 @@
         </div>
     </nav>
 
-    <div class="container-fluid mt-5 pt-4">
+    <div class="container mt-5 pt-4">
 	
 		<div id="notice" class="col">
 			<p style="color:red;">
@@ -60,6 +60,10 @@
 		
         <form style="display:none" class=" mb-3" id="questionnaireForm">
 			<h3 class="mb-2">Profiler</h1>
+			
+			
+			<!-- children -->
+			
             <div class="form-group mb-4">
                 <label>Do you have children?</label>
                 <div class="form-check">
@@ -102,6 +106,9 @@
                 </table>
             </div>
 
+
+			<!-- work -->
+
             <div class="form-group mb-4">
                 <label>Do you work?</label>
                 <div class="form-check">
@@ -121,6 +128,186 @@
                     <input type="number" id="workHours" name="workHours" class="form-control" min="0" value="8">
                 </div>
             </div>
+			
+			
+			<!-- exercise -->
+			<div class="form-group mb-4">
+				<label>Do you exercise regularly?</label>
+				<div class="form-check">
+					<input class="form-check-input" type="radio" name="exercise" id="exerciseYes" value="yes">
+					<label class="form-check-label" for="exerciseYes">Yes</label>
+				</div>
+				<div class="form-check">
+					<input class="form-check-input" type="radio" name="exercise" id="exerciseNo" value="no" checked>
+					<label class="form-check-label" for="exerciseNo">No</label>
+				</div>
+			</div>
+
+			<div id="exerciseDetails" class="form-group mb-4 hidden">
+				<h4>Exercise Details</h4>
+				<div class="form-group">
+					<label for="exerciseFrequency">Exercise frequency per week</label>
+					<input type="number" id="exerciseFrequency" name="exerciseFrequency" class="form-control" min="0" value="3">
+				</div>
+				<div class="form-group">
+					<label for="exerciseDuration">Duration per exercise session (in minutes)</label>
+					<input type="number" id="exerciseDuration" name="exerciseDuration" class="form-control" min="0" value="30">
+				</div>
+			</div>
+			
+			<!-- chores -->
+			<div class="form-group mb-4">
+				<label>Do you do household chores regularly?</label>
+				<div class="form-check">
+					<input class="form-check-input" type="radio" name="chores" id="choresYes" value="yes">
+					<label class="form-check-label" for="choresYes">Yes</label>
+				</div>
+				<div class="form-check">
+					<input class="form-check-input" type="radio" name="chores" id="choresNo" value="no" checked>
+					<label class="form-check-label" for="choresNo">No</label>
+				</div>
+			</div>
+
+			<div id="choresDetails" class="form-group mb-4 hidden">
+				<h4>Chores Details</h4>
+				<div class="form-group">
+					<label for="choresHours">Hours spent on chores per week</label>
+					<input type="number" id="choresHours" name="choresHours" class="form-control" min="0" value="5">
+				</div>
+			</div>
+
+			
+			<!-- cooking -->
+			<div class="form-group mb-4">
+				<label>Do you cook regularly?</label>
+				<div class="form-check">
+					<input class="form-check-input" type="radio" name="cook" id="cookYes" value="yes">
+					<label class="form-check-label" for="cookYes">Yes</label>
+				</div>
+				<div class="form-check">
+					<input class="form-check-input" type="radio" name="cook" id="cookNo" value="no" checked>
+					<label class="form-check-label" for="cookNo">No</label>
+				</div>
+			</div>
+
+			<div id="cookDetails" class="form-group mb-4 hidden">
+				<h4>Cooking Details</h4>
+				<div class="form-group">
+					<label for="cookFrequency">Cooking frequency per week</label>
+					<input type="number" id="cookFrequency" name="cookFrequency" class="form-control" min="0" value="7">
+				</div>
+				<div class="form-group">
+					<label for="cookDuration">Duration per cooking session (in minutes)</label>
+					<input type="number" id="cookDuration" name="cookDuration" class="form-control" min="0" value="60">
+				</div>
+			</div>
+			
+			
+			<!-- commute -->
+			<div class="form-group mb-4">
+				<label>Do you commute regularly?</label>
+				<div class="form-check">
+					<input class="form-check-input" type="radio" name="commute" id="commuteYes" value="yes">
+					<label class="form-check-label" for="commuteYes">Yes</label>
+				</div>
+				<div class="form-check">
+					<input class="form-check-input" type="radio" name="commute" id="commuteNo" value="no" checked>
+					<label class="form-check-label" for="commuteNo">No</label>
+				</div>
+			</div>
+
+			<div id="commuteDetails" class="form-group mb-4 hidden">
+				<h4>Commute Details</h4>
+				<div class="form-group">
+					<label for="commuteFrequency">Commute frequency per week</label>
+					<input type="number" id="commuteFrequency" name="commuteFrequency" class="form-control" min="0" value="5">
+				</div>
+				<div class="form-group">
+					<label for="commuteDuration">Duration per commute session (in minutes)</label>
+					<input type="number" id="commuteDuration" name="commuteDuration" class="form-control" min="0" value="60">
+				</div>
+			</div>
+
+
+			<!-- leisure -->
+			<div class="form-group mb-4">
+				<label>Do you engage in leisure activities regularly?</label>
+				<div class="form-check">
+					<input class="form-check-input" type="radio" name="leisure" id="leisureYes" value="yes">
+					<label class="form-check-label" for="leisureYes">Yes</label>
+				</div>
+				<div class="form-check">
+					<input class="form-check-input" type="radio" name="leisure" id="leisureNo" value="no" checked>
+					<label class="form-check-label" for="leisureNo">No</label>
+				</div>
+			</div>
+
+			<div id="leisureDetails" class="form-group mb-4 hidden">
+				<h4>Leisure Details</h4>
+				<div class="form-group">
+					<label for="leisureFrequency">Leisure frequency per week</label>
+					<input type="number" id="leisureFrequency" name="leisureFrequency" class="form-control" min="0" value="3">
+				</div>
+				<div class="form-group">
+					<label for="leisureDuration">Duration per leisure session (in minutes)</label>
+					<input type="number" id="leisureDuration" name="leisureDuration" class="form-control" min="0" value="120">
+				</div>
+			</div>
+			
+			
+			<!-- social activities -->
+			<div class="form-group mb-4">
+				<label>Do you engage in social activities regularly?</label>
+				<div class="form-check">
+					<input class="form-check-input" type="radio" name="social" id="socialYes" value="yes">
+					<label class="form-check-label" for="socialYes">Yes</label>
+				</div>
+				<div class="form-check">
+					<input class="form-check-input" type="radio" name="social" id="socialNo" value="no" checked>
+					<label class="form-check-label" for="socialNo">No</label>
+				</div>
+			</div>
+
+			<div id="socialDetails" class="form-group mb-4 hidden">
+				<h4>Social Activities Details</h4>
+				<div class="form-group">
+					<label for="socialFrequency">Social activities frequency per week</label>
+					<input type="number" id="socialFrequency" name="socialFrequency" class="form-control" min="0" value="2">
+				</div>
+				<div class="form-group">
+					<label for="socialDuration">Duration per social session (in minutes)</label>
+					<input type="number" id="socialDuration" name="socialDuration" class="form-control" min="0" value="180">
+				</div>
+			</div>
+
+
+			<!-- errands -->
+			<div class="form-group mb-4">
+				<label>Do you run errands regularly?</label>
+				<div class="form-check">
+					<input class="form-check-input" type="radio" name="errands" id="errandsYes" value="yes">
+					<label class="form-check-label" for="errandsYes">Yes</label>
+				</div>
+				<div class="form-check">
+					<input class="form-check-input" type="radio" name="errands" id="errandsNo" value="no" checked>
+					<label class="form-check-label" for="errandsNo">No</label>
+				</div>
+			</div>
+
+			<div id="errandDetails" class="form-group mb-4 hidden">
+				<h4>Errand Details</h4>
+				<div class="form-group">
+					<label for="errandFrequency">Errand frequency per week</label>
+					<input type="number" id="errandFrequency" name="errandFrequency" class="form-control" min="0" value="3">
+				</div>
+				<div class="form-group">
+					<label for="errandDuration">Duration per errand session (in minutes)</label>
+					<input type="number" id="errandDuration" name="errandDuration" class="form-control" min="0" value="60">
+				</div>
+			</div>
+
+
+
 
             <button type="button" class="btn btn-primary" onclick="processQuestionnaire()">Next</button>
             <button type="button" class="btn btn-secondary" onclick="location.href='stats.html';">Skip</button>

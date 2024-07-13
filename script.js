@@ -602,29 +602,57 @@ $(document).ready(function() {
 	/* --------------------------------------------------------------------------- auto tasks from questionaire --------------------------------------------------------------------- */
 	
 	const userPreferences = JSON.parse(localStorage.getItem('userPreferences'));
-	
+	console.log(userPreferences);
+
 	const questionaireTasks = {
 		"0": { taskName: 'Change diapers', recurrenceAmount: 5, recurrence: 'daily', durationAmount: 10, durationUnit: 'minutes', intervalDuration: 2, intervalUnit: "years", taskDescription: "" },
 		"1": { taskName: 'Feed the baby', recurrenceAmount: 5, recurrence: 'daily', durationAmount: 30, durationUnit: 'minutes', intervalDuration: 2, intervalUnit: "years", taskDescription: "" },
 		"2": { taskName: 'Make school lunch', recurrenceAmount: 1, recurrence: 'daily', durationAmount: 20, durationUnit: 'minutes', intervalDuration: 10, intervalUnit: "years", taskDescription: "" },
-		"3": { taskName: 'Work', recurrenceAmount: 1, recurrence: 'daily', durationAmount: userPreferences.workHours, durationUnit: 'hours', intervalDuration: 50, intervalUnit: "years", taskDescription: "" }
-	}
-	
+		"3": { taskName: 'Work', recurrenceAmount: 1, recurrence: 'daily', durationAmount: parseInt(userPreferences ? userPreferences.workHours : 8), durationUnit: 'hours', intervalDuration: 50, intervalUnit: "years", taskDescription: "" },
+		"4": { taskName: 'Exercise', recurrenceAmount: parseInt(userPreferences ? userPreferences.exerciseFrequency : 0), recurrence: 'weekly', durationAmount: parseInt(userPreferences ? userPreferences.exerciseDuration : 0), durationUnit: 'minutes', intervalDuration: 50, intervalUnit: "years", taskDescription: "" },
+		"5": { taskName: 'Household Chores', recurrenceAmount: 7, recurrence: 'weekly', durationAmount: parseInt(userPreferences ? userPreferences.choresHours : 0), durationUnit: 'hours', intervalDuration: 50, intervalUnit: "years", taskDescription: "" },
+		"6": { taskName: 'Cook Meals', recurrenceAmount: parseInt(userPreferences ? userPreferences.cookFrequency : 0), recurrence: 'weekly', durationAmount: parseInt(userPreferences ? userPreferences.cookDuration : 0), durationUnit: 'minutes', intervalDuration: 50, intervalUnit: "years", taskDescription: "" },
+		"7": { taskName: 'Commute', recurrenceAmount: parseInt(userPreferences ? userPreferences.commuteFrequency : 0), recurrence: 'daily', durationAmount: parseInt(userPreferences ? userPreferences.commuteDuration : 0), durationUnit: 'minutes', intervalDuration: 50, intervalUnit: "years", taskDescription: "" },
+		"8": { taskName: 'Leisure Activities', recurrenceAmount: parseInt(userPreferences.leisureFrequency), recurrence: 'weekly', durationAmount: parseInt(userPreferences ? userPreferences.leisureTime : 0), durationUnit: 'minutes', intervalDuration: 50, intervalUnit: "years", taskDescription: "" },
+		"9": { taskName: 'Social Activities', recurrenceAmount: parseInt(userPreferences ? userPreferences.socialFrequency : 0), recurrence: 'weekly', durationAmount: parseInt(userPreferences ? userPreferences.socialTime : 0), durationUnit: 'minutes', intervalDuration: 50, intervalUnit: "years", taskDescription: "" },
+		"10": { taskName: 'Errands', recurrenceAmount: parseInt(userPreferences ? userPreferences.errandFrequency : 0), recurrence: 'weekly', durationAmount: parseInt(userPreferences ? userPreferences.errandTime : 0), durationUnit: 'minutes', intervalDuration: 50, intervalUnit: "years", taskDescription: "" }
+	};
+
 	if (userPreferences) {
-        if (userPreferences.hasChildren === 'yes') {
-            if (userPreferences.newborn > 0) {
+		if (userPreferences.hasChildren == 'yes') {
+			if (userPreferences.newborn > 0) {
 				addTaskRow(questionaireTasks["0"]);
 				addTaskRow(questionaireTasks["1"]);
-            }
-            if (userPreferences.teenager > 0) {
+			}
+			if (userPreferences.teenager > 0) {
 				addTaskRow(questionaireTasks["2"]);
-            }
-        }
-        if (userPreferences.work === 'yes') {
+			}
+		}
+		if (userPreferences.work == 'yes') {
 			addTaskRow(questionaireTasks["3"]);
-        }
-		
-    }
+		}
+		if (userPreferences.exercise == 'yes') {
+			addTaskRow(questionaireTasks["4"]);
+		}
+		if (userPreferences.chores == 'yes') {
+			addTaskRow(questionaireTasks["5"]);
+		}
+		if (userPreferences.cook == 'yes') {
+			addTaskRow(questionaireTasks["6"]);
+		}
+		if (userPreferences.commute == 'yes') {
+			addTaskRow(questionaireTasks["7"]);
+		}
+		if (userPreferences.leisure == 'yes') {
+			addTaskRow(questionaireTasks["9"]);
+		}
+		if (userPreferences.social == 'yes') {
+			addTaskRow(questionaireTasks["10"]);
+		}
+		if (userPreferences.errands == 'yes') {
+			addTaskRow(questionaireTasks["11"]);
+		}
+	}
 
 
 	/* ------------------------------------------------------------------------------------------------------------------------------------------------ */
